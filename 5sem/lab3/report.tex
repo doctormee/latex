@@ -1,4 +1,4 @@
-\documentclass[11pt, oneside, draft]{article} 
+\documentclass[11pt, oneside, final]{article} 
 \usepackage[utf8]{inputenc} 
 \usepackage{a4wide} 
 \usepackage[russian]{babel} 
@@ -28,6 +28,7 @@
 \newtheorem*{statement}{Утверждение} 
 \renewenvironment{proof}{
 \noindent\textit{Доказательство: }} {\qed}
+\newcounter{icount}
 
 %commands
 \newcommand \bitem[1][]{
@@ -129,7 +130,8 @@
             \label{eq:step}
                 step= \dfrac{(b - a)}{nPoints - 1}
             \end{equation}
-            \bitem[inpLimVec] ~--- окно \([a, b]\) для функции \(f(t)\) \bitem[outLimVec] ~--- окно для вывода графика преобразования Фурье \(\fft\) 
+            \bitem[inpLimVec] ~--- окно \([a, b]\) для функции \(f(t)\)
+            \bitem[outLimVec] ~--- окно \([c, d]\) для вывода графика преобразования Фурье \(\fft\) 
         \end{itemize}
         \item Построить, используя написанную функцию \texttt{plotFT}, для каждой из функций системы \eqref{functions} графики \(\fft\) для разных значений входных параметров
         (окон \textbf{inpLimVec, outLimVec} и частоты дискретизации \textbf{step}). \\В частности, для некоторых функций подобрать параметры так, чтобы проиллюстрировать эффекты
@@ -287,7 +289,7 @@
     Преобразование Фурье \( \mathfrak{F_1} (\lambda)\) функции \(f_1(t) = e^{-2|t|} \cos(t) \) задаётся формулой:
     \[ \mathfrak{F_1} (\lambda) = \intinf[{e^{-2|t|} \cos(t) e^{-i\lambda t}\, dt}] \]
     \begin{statement}
-        \begin{equation}\label{fourier_transform:f1} 
+        \begin{equation}\label{eq:fourier:f1} 
             \boxed{ \mathfrak{F_1}(\lambda) = \dfrac{4(\lambda^2 + 5)}{\lambda^4 + 6\lambda^2 + 25} } 
         \end{equation}
     \end{statement}
@@ -307,10 +309,11 @@
     \clearpage
     %Fourier 2
 
-    \subsection{Вычисление~аналитического~преобразования~Фурье\\функции~\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)} Преобразование Фурье \( \mathfrak{F_2} (\lambda)\) функции \(f_2(t) = \frac{e^{-|t|} - 1}{t} \) задаётся формулой:
+    \subsection{Вычисление~аналитического~преобразования~Фурье\\функции~\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)}
+    Преобразование Фурье \( \mathfrak{F_2} (\lambda)\) функции \(f_2(t) = \frac{e^{-|t|} - 1}{t} \) задаётся формулой:
     \[ \mathfrak{F_2} (\lambda) = \intinf[{\dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] \]
     \begin{statement}
-        \begin{equation}\label{fourier_transform:f2} 
+        \begin{equation}\label{eq:fourier:f2} 
             \boxed{ \mathfrak{F_2}(\lambda) = i\left(\pi\sgn(\lambda) - 2\arctg(\lambda)\right) } 
         \end{equation}
     \end{statement}
@@ -329,6 +332,85 @@
         \]
     \end{proof}
     \clearpage
+    \section{Построение графиков} % (fold)
+    \label{sec:plotting}
+    \subsection{\(f_1(t) = e^{-2|t|} \cos(t)\)} % (fold)
+    \label{sub:f1}
+    Данная функция непрерывна на всей числовой прямой вместе со своим преобразованием Фурье \eqref{eq:fourier:f1}. Рассмотрим результат работы \texttt{plotFT}
+    для данной функции и различного значения параметров \(\Delta t\)~(\texttt{step}), \([a, b]\)~(\texttt{inpLimVec}) и \([c, d]\)~(\texttt{outLimVec}):
+    \begin{enumerate}
+        \item 
+        \texttt{step} = \(10^{-3}\), \texttt{inpLimVec} = \( [-30, 30] \), \texttt{outLimVec} = \( [-\pi, \pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\textwidth]{f1fig1}
+            \label{pic:f1:1}
+        \end{figure} \\
+        Вещественные части графиков аналитического преобразования и вычисленной аппроксимации практически совпадают, а погрешность во мнимой части сравнима с величиной
+        шага дискретизации \texttt{step}
+        \clearpage
+        \item
+        Сразу после построения предыдущего графика, вызовем \texttt{plotFT} с тем же параметром hFigure и следующим набором параметров:\\
+        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-20, 30] \), \texttt{outLimVec} = \( [] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\textwidth]{f1fig2}
+            \label{pic:f1:2}
+        \end{figure} \\
+        Несмотря на несимметричное окно \texttt{inpLimVec}, графики вещественных частей по-прежнему совпадают, 
+        а мнимых ~--- различаются на величину порядка \texttt{step}. Отметим, что, так как был передан пустой вектор \texttt{outLimVec}, то пределы 
+        по оси абсцисс~\(\lambda\) на графиках не изменились
+        \clearpage
+        \item
+        \texttt{step} = \(10^{-5}\), \texttt{inpLimVec} = \( [-10, 20] \), \texttt{outLimVec} = \( [-2\pi, \pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f1fig3}
+            \label{pic:f1:3}
+        \end{figure} \\
+        В данном случае используется несимметричное окно для вывода (\texttt{outLimVec})
+        \setcounter{icount}{\value{enumi}}
+    \end{enumerate}
+    \clearpage
+    Кроме того, на примере данной функции проиллюстрируем \emph{эффект наложения спектра (aliasing)}: для этого, отобразим на графике не только
+    аналитическое преобразование Фурье, но и его же, сдвинутое влево и вправо на \(\frac{\pi}{\Delta t}\), где \(\Delta t\) = \texttt{step} 
+    ~--- частота дискретизации. Из \cite{Roublev:fourier} известно, что численная аппроксимация \(\fft\) есть сумма аналитического преобразования 
+    и сдвинутых аналитических преобразований \(\forall \lambda \in \left[-\frac{\pi}{\Delta t}, \frac{\pi}{\Delta t}\right] \).
+    \begin{enumerate}
+        \setcounter{enumi}{\value{icount}}
+        \item 
+        \texttt{step} = \(1\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [\pi, \pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f1fig4}
+            \label{pic:f1:4}
+        \end{figure} \\
+        Для преобразований Фурье \( \four \) ограниченного спектра \\ (таких, что \( \exists\Lambda \, \colon \four =0, \; \forall \lambda \colon |\lambda| > \Lambda \))
+        из \cite{Roublev:fourier} известно, что эффект не будет проявляться при \(\Delta t \leqslant \Delta_{t}^\text{н}\),
+        где \(\Delta_{t}^\text{н} = \frac{\pi}{\Lambda}\) ~--- так называемая частота Найквиста (Nyquist rate).
+        Однако, в силу того, что спектр полученного аналитически преобразования Фурье \eqref{eq:fourier:f1} 
+        неограничен (т.е. \(\not\exists\Lambda \, \colon \mathfrak{F_1}(\lambda) = 0, \; \forall \lambda \colon |\lambda| > \Lambda\)),
+        полное устранение данного эффекта невозможно;
+        но, т.к. аналитическое преобразование достаточно быстро стремится к нулю (со скоростью порядка \(\frac{1}{\lambda^2}\)), 
+        то уменьшением шага дискретизации эффект наложения спектра можно свести к незначительному (см. \ref{it:noaliasing})
+        \clearpage
+        \item
+        \label{it:noaliasing}
+        \texttt{step} = \(10^{-1}\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [\pi, \pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f1fig5}
+            \label{pic:f1:5}
+        \end{figure} \\
+        Здесь хорошо видно, что, хотя эффект наложения спектра не устранён полностью, он практически незаметен.
+    \end{enumerate}
+    % subsection f1 (end)
+    % section plotting (end)
+    \clearpage
+    \subsection{\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)} % (fold)
+    \label{sub:f2}
+    
+    % subsection f2 (end)
     \appendix
     \section{Код функции \texttt{plotFT}} % (fold)
     \label{lst:code}
@@ -424,6 +506,7 @@ end
     \end{verbatim}
     % section code (end)
     \begin{thebibliography}{0}
+        \addcontentsline{}{section}{Список литературы}
         \bibitem{Roublev:fourier} И. В.~Рублёв. Лекционный курс \emph{Преобразования Лапласа-Фурье},
         кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
