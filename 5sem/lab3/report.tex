@@ -8,7 +8,7 @@
 \usepackage{amsfonts} 
 \usepackage{amssymb} 
 \usepackage{amsthm}
-
+\usepackage[perpage]{footmisc}
 %\newtheoremstyle{mytheorem}% name of the style to be used
 %  {}% measure of space to leave above the theorem. E.g.: 3pt
 %  {}% measure of space to leave below the theorem. E.g.: 3pt
@@ -147,8 +147,7 @@
         \item Подготовка фигуры к выводу графиков
         \item Вывод графиков быстрого и, при необходимости, аналитического преобразований Фурье 
     \end{enumerate}
-    Соответственно, будем решать подзадачи в приведённом порядке, приводя необходимые выкладки и теоретические обоснования.
-    \footnote{Полный код функции \texttt{plotFT} приведён в приложении~\ref{app:code} (стр.~\pageref{app:code})}
+    Соответственно, будем решать подзадачи в приведённом порядке, приводя необходимые выкладки и теоретические обоснования\footnote{Полный код функции \texttt{plotFT} приведён в приложении~\ref{lst:code} (стр.~\pageref{lst:code})}.
     % subsection tasks (end)
     \subsection{Вычисление аппроксимации преобразования Фурье} % (fold)
     \label{sub:fft}
@@ -181,12 +180,32 @@
             \xrightarrow{\mathtt{fftshift(fft())}} F_\text{дискр}(\lambda) 
             \xrightarrow{\eqref{eq:from_discr}} F(\lambda)
         \]
+        \clearpage
         \item
-        
+        Преобразование Фурье рассматривается на отрезке \small{\(\left[\frac{-\pi}{\Delta t}, \frac{\pi}{\Delta t}\right]\)}, длины \(2\pi/\Delta t\), 
+        разбитом на \texttt{nSteps} точек. Обратившись к \cite{Roublev:fourier}, установим следующее свойство преобразования Фурье: 
+        \[
+            \boxed{f(t - t_0) \rarrow e^{-i\lambda t_0}F(\lambda)}
+        \]
+        Соответственно, для получения желаемого результата, полученный вектор значений \textbf{ДПФ} следует домножить на соответствующие значения экспоненты.
     \end{enumerate}
+    \subsection{Подготовка фигуры к выводу графиков} % (fold)
+    \label{sub:prepare_graphs}
+    В поле \texttt{UserData} фигуры \texttt{fHandle} будем хранить \texttt{handle} двух соответствующих осей (\texttt{axes}),
+    а также окно вывода по оси абсцисс \(\lambda\). В случае, если \texttt{UserData} у поданной фигуры пуст, сформируем его, построив две оси для вещественной и мнимой частей
+    преобразования Фурье, соответствующим образом выбирая окно вывода: для этого просматриваем вектор значений \textbf{ДПФ} и находим левую и правую границы, на которых значение
+    превышает некоторое \(\varepsilon\), обозначенное в программе как \texttt{moe} (англ. \emph{margin of error}). 
+    При наличии у фигуры поля \texttt{UserData}, но отсутствии в нём осей и/или пределов, дополним недостающие поля аналогичным образом.
+    Наконец, сформированную структуру запишем в поле \texttt{UserData} фигуры \texttt{fHandle}.
+    \subsection{Вывод графиков} % (fold)
+    \label{sub:plotting}
+    Вывод графиков осуществляется стандартными средствами языка MATLAB, при этом, если поле \texttt{fFTHandle} не пусто, то выводится и график функции, на которую
+    указывает \texttt{fFTHandle}.
+    % subsection plotting (end)
+    % subsection \xD0\xBF\xD0\xBE\xD0\xB4\xD0\xB3\xD0\xBE\xD1\x82\xD0\xBE\xD0\xB2\xD0\xBA\xD0\xB0 (end)
     % section programm (end)
     %fourier
-    \pagebreak
+    \clearpage
     \section{Вычисление~аналитических~преобразований~Фурье}
 
     \subsection{Некоторые~необходимые~обозначения~и~соотношения}
@@ -196,8 +215,7 @@
     \end{align*}
     Впредь, будем для краткости писать:
     \[ \boxed{ f(t)\rarrow\four} \]
-
-    { Напомним также следующие свойства преобразования Фурье:
+    Напомним также следующие свойства преобразования Фурье:
     \begin{property}\label{property:linear} 
         \mdseriesПусть 
         \begin{gather*}
@@ -226,9 +244,7 @@
         Тогда:
         \[ 2\pi f_1(t) \cdot f_2(t) \rarrow (\mathfrak{F_1 * F_2)}(\lambda) \text{ , где }(\mathfrak{F_1 * F_2})(\lambda) = \intinf[{\bigl[\mathfrak{F_1}(\lambda - s) \cdot \mathfrak{F_2}(s)\bigr] \, ds}] \]
     \end{property}
-    }
-
-    { Отметим некоторые тривиальные преобразования Фурье: 
+    \noindentОтметим некоторые тривиальные\footnote{Вывод этих преобразований, а также доказательства свойств~\eqref{property:linear} и~\eqref{property:product} можно найти в \cite{Roublev:fourier}} преобразования Фурье: 
     \begin{flalign}\label{fourier:delta}
         \delta(\lambda) &\rarrow 1 \\
         \label{fourier:1} 1 &\rarrow 2\pi\delta(\lambda) \\
@@ -242,14 +258,11 @@
         0,& t \not= 0 
     \end{cases}
     \)~--- дельта-функция Дирака, а соотношение \eqref{fourier:cos} вытекает из свойства~\ref{property:linear}, с учётом \eqref{fourier:exp}. \\
-    Вывод этих преобразований, а также доказательства свойств~\eqref{property:linear} и~\eqref{property:product} можно найти в \cite{Roublev:fourier} }
-
     %delta
-    { Установим также важное отношения для свёртки дельта-функции с произвольной функцией \(\varphi(t)\): 
+    Установим также важное отношения для свёртки дельта-функции с произвольной функцией \(\varphi(t)\): 
     \begin{align}\label{delta:conv}
         \boxed{\left(\delta * \varphi \right) (s) = \intinf[{\delta(s - \tau) \cdot \varphi(\tau)\, d\tau} = \varphi(s)]} 
     \end{align}
-    }
 
     \noindent Докажем следующее соотношение: 
     \begin{lemma}
@@ -318,7 +331,7 @@
     \clearpage
     \appendix
     \section{Код функции \texttt{plotFT}} % (fold)
-    \label{app:code}
+    \label{lst:code}
     \begin{verbatim}
 function [ res ] = plotFT( hFigure, fHandle, fFTHandle, ...
                             step, inpLimVec, outLimVec)
@@ -411,8 +424,11 @@ end
     \end{verbatim}
     % section code (end)
     \begin{thebibliography}{0}
-        \bibitem{Roublev:fourier} И. В.~Рублёв, \emph{курс лекций "<Преобразования Лапласа-Фурье">},
-        \\кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        \bibitem{Roublev:fourier} И. В.~Рублёв. Лекционный курс \emph{Преобразования Лапласа-Фурье},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        2017
+        \bibitem{RoublevTochilin:matlab} И. В.~Рублёв, П. А.~Точилин. Лекционный курс \emph{Программирование на языке \texttt{MATLAB}},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
     \end{thebibliography}
 \end{document}
