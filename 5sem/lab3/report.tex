@@ -455,6 +455,32 @@
     \end{enumerate}
     \clearpage
     % subsection f2 (end)
+    \subsection{\( f_3(t) = \dfrac{\arctg{t^2}}{1 + t^4}\)} % (fold)
+    \begin{enumerate}
+        \item
+        \label{it:f31}
+        \texttt{step} = \(10^{-3}\), \texttt{inpLimVec} = \( [-30, 40] \), \texttt{outLimVec} = \( [-10, 10] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f3fig1}
+            \label{pic:f3:1}
+        \end{figure} \\
+        Из того, что отклонение мнимой части аппроксимации от нуля есть величина порядка \texttt{step} можно заключить,
+        что \(Im(\four) = 0, \; \forall \lambda \). 
+        \clearpage
+        \item
+        \label{it:f32}
+        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-10, 10] \), \texttt{outLimVec} = \( [-\pi, pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f3fig2}
+            \label{pic:f3:2}
+        \end{figure} \\
+        Несмотря на изменение всех параметров, вид графиков существенно не поменялся.
+    \label{sub:f3}
+    
+    \end{enumerate}
+    % subsection f3 (end)
     \appendix
     \section{Код функции \texttt{plotFT}} % (fold)
     \label{lst:code}
@@ -551,10 +577,10 @@ end
     % section code (end)
     \begin{thebibliography}{0}
         \addcontentsline{}{section}{Список литературы}
-        \bibitem{Roublev:fourier} И. В.~Рублёв. Лекционный курс \emph{Преобразования Лапласа-Фурье},
+        \bibitem{Roublev:fourier} И. В.~Рублёв. \emph{Лекционный курс Преобразования Лапласа-Фурье},
         кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
-        \bibitem{RoublevTochilin:matlab} И. В.~Рублёв, П. А.~Точилин. Лекционный курс \emph{Программирование на языке \texttt{MATLAB}},
+        \bibitem{RoublevTochilin:matlab} И. В.~Рублёв, П. А.~Точилин. \emph{Лекционный курс Программирование на языке \texttt{MATLAB}},
         кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
         \bibitem{Matlab:help} Справочные средства языка \texttt{MATLAB}
