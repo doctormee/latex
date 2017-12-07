@@ -326,9 +326,10 @@
         Пользуясь установленными свойствами~\ref{property:linear},~\ref{property:product}, выражениями для преобразований Фурье~\(g_1(t)\) \eqref{fourier:exp_abs},~\eqref{fourier:1} и~\(g_2(t)\)~\eqref{fourier:1/t} и соотношением~\eqref{delta:conv} для свёртки с дельта-функцией, получим:
         \[ 
         \begin{split} 
-            f_2(t) \rarrow \mathfrak{F_2} (\lambda) &= \intinf[{ \dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] = \dfrac{1}{\pi}\left[\left({\dfrac{1}{1 + (\cdot)^2} - \pi\delta(\cdot)}\right) * \left({-i \pi \sgn(\cdot)}\right)\right] \negmedspace({\lambda}) = \\
+            f_2(t) \rarrow \mathfrak{F_2} (\lambda) &= \intinf[{ \dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] = 
+            \dfrac{1}{\pi}\left[\left({\dfrac{1}{1 + (\cdot)^2} - \pi\delta(\cdot)}\right) * \left({-i \pi \sgn(\cdot)}\right)\right] \negmedspace({\lambda}) = \\
             &= -i\int\limits_{\lambda}^{+\infty}{\dfrac{1}{1 + \tau^2}\, d\tau} + i\int\limits_{-\infty}^{\lambda}{\dfrac{1}{1 + \tau^2}\, d\tau} + \pi i \sgn(\lambda) = \\
-            &= i\left(\pi \sgn(\lambda) + 2\arctg(\lambda)\right) 
+            &= i\left(\pi \sgn(\lambda) - 2\arctg(\lambda)\right) 
         \end{split}
         \]
     \end{proof}
@@ -432,6 +433,7 @@
         Её появление в точке разрыва первого рода обусловливается свойством преобразования Фурье разрывной функции из \cite{Roublev:fourier},
         а в некоторых точках непрерывности ~--- малым размером окна \([a, b]\) (\texttt{inpLimVec}).\\
         Устранить рябь в точке разрыва не представляется возможным, однако можно сгладить её в остальных точках, увеличив окно \texttt{inpLimVec}.
+        Отметим в заключение, что график вещественной части напоминает визуально \textbf{ГЗ МГУ}.
         \clearpage
         \item
         \label{it:lessnoise}
@@ -453,7 +455,21 @@
             \label{pic:f2:3}
         \end{figure} \\
         В точке разрыва на графике вещественной части у численной аппроксимации наблюдается шум иного рода, порядка выше \texttt{step}; 
-        это обусловливается особенностью работы функции \texttt{fft(\dots)} на несимметричном окне \([a, b]\) (\texttt{inpLimVec}).
+        это обусловливается 
+        % особенностью работы функции \texttt{fft(\dots)} на несимметричном окне \([a, b]\) (\texttt{inpLimVec}).
+        тем, что в данном случае остаются "<нескомпенсированные"> частоты, вносящие существенную ошибку в численную аппроксимацию. 
+        При увеличении размеров несимметричного окна происходит увеличение частоты шума (так как значения расчитываются в большем числе точек), 
+        а при уменьшении "<симметричности"> окна \(|b| - |a|\) увеличивается верхняя оценка внесенной погрешности 
+        (так как остаётся больше высоких "<нескомпенсированных"> частот).
+        \clearpage
+        \item
+        \label{it:fftmorenoise}
+        \texttt{step} = \(10^{-3}\), \texttt{inpLimVec} = \( [-10, 30] \), \texttt{outLimVec} = \( [-2\pi, 2\pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f2fig4}
+            \label{pic:f2:4}
+        \end{figure} \\
     \end{enumerate}
     \clearpage
     
@@ -495,7 +511,7 @@
             \includegraphics[width=\linewidth]{f4fig1}
             \label{pic:f4:1}
         \end{figure} \\
-        Аналогично \ref{sec:plotting}.\ref{sub:f3}.\ref{it:f31} можно сделать вывод, что \(Re(\four) = 0, \; \forall \lambda \). 
+        Аналогично \ref{sec:plotting}.\ref{sub:f3}.\ref{it:f31} можно сделать вывод, что \(Re(\four) = 0, \; \forall \lambda \). \\
         \clearpage
         \item
         \label{it:f42}
