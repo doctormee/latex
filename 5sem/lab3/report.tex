@@ -1,4 +1,4 @@
-\documentclass[11pt, oneside, final]{article} 
+\documentclass[11pt, oneside, draft]{article} 
 \usepackage[utf8]{inputenc} 
 \usepackage{a4wide} 
 \usepackage[russian]{babel} 
@@ -169,7 +169,7 @@
         \item 
         Вычислим на сетке \([a, b]\), состоящей из \texttt{n} точек значения самой функции \(f(t)\), тем самым получим дискретизацию \(f_\text{дискр}(t)\),
         затем воспользуемся функциями MATLAB \texttt{fft()} и \texttt{fftshift()}, первая из которых вычисляет дискретное преобразование Фурье (\textbf{ДПФ}) 
-        функции \(f_\text{дискр}(t)\), однако возвращает вектор значений в зеркальном виде, а вторая ~--- "<отзеркаливает"> этот вектор, приводя его к нормальному виду. 
+        функции \(f_\text{дискр}(t)\), однако возвращает вектор значений в зеркальном виде, а вторая ~--- "<отзеркаливает"> этот вектор, приводя его к нормальному виду\footnote{Здесь и далее все использованные средства языка \texttt{MATLAB} и спецификации взяты из \cite{RoublevTochilin:matlab} и \cite{Matlab:help}}. 
         Искомая аппроксимация преобразования Фурье \(F(\lambda)\) вычисляется по следующей формуле (доказательство её справедливости приведено в \cite{Roublev:fourier}):
         \begin{equation} \label{eq:from_discr}
             F(\lambda) = \mathtt{step} \cdot F_\text{дискр}(\lambda)
@@ -347,7 +347,7 @@
             \label{pic:f1:1}
         \end{figure} \\
         Вещественные части графиков аналитического преобразования и вычисленной аппроксимации практически совпадают, а погрешность во мнимой части сравнима с величиной
-        шага дискретизации \texttt{step}
+        шага дискретизации \texttt{step}.
         \clearpage
         \item
         Сразу после построения предыдущего графика, вызовем \texttt{plotFT} с тем же параметром hFigure и следующим набором параметров:\\
@@ -359,7 +359,7 @@
         \end{figure} \\
         Несмотря на несимметричное окно \texttt{inpLimVec}, графики вещественных частей по-прежнему совпадают, 
         а мнимых ~--- различаются на величину порядка \texttt{step}. Отметим, что, так как был передан пустой вектор \texttt{outLimVec}, то пределы 
-        по оси абсцисс~\(\lambda\) на графиках не изменились
+        по оси абсцисс~\(\lambda\) на графиках не изменились.
         \clearpage
         \item
         \texttt{step} = \(10^{-5}\), \texttt{inpLimVec} = \( [-10, 20] \), \texttt{outLimVec} = \( [-2\pi, \pi] \)
@@ -371,11 +371,11 @@
         В данном случае используется несимметричное окно для вывода (\texttt{outLimVec})
         \setcounter{icount}{\value{enumi}}
     \end{enumerate}
-    \clearpage
     Кроме того, на примере данной функции проиллюстрируем \emph{эффект наложения спектра (aliasing)}: для этого, отобразим на графике не только
     аналитическое преобразование Фурье, но и его же, сдвинутое влево и вправо на \(\frac{\pi}{\Delta t}\), где \(\Delta t\) = \texttt{step} 
     ~--- частота дискретизации. Из \cite{Roublev:fourier} известно, что численная аппроксимация \(\fft\) есть сумма аналитического преобразования 
     и сдвинутых аналитических преобразований \(\forall \lambda \in \left[-\frac{\pi}{\Delta t}, \frac{\pi}{\Delta t}\right] \).
+    \clearpage
     \begin{enumerate}
         \setcounter{enumi}{\value{icount}}
         \item 
@@ -392,7 +392,7 @@
         неограничен (т.е. \(\not\exists\Lambda \, \colon \mathfrak{F_1}(\lambda) = 0, \; \forall \lambda \colon |\lambda| > \Lambda\)),
         полное устранение данного эффекта невозможно;
         но, т.к. аналитическое преобразование достаточно быстро стремится к нулю (со скоростью порядка \(\frac{1}{\lambda^2}\)), 
-        то уменьшением шага дискретизации эффект наложения спектра можно свести к незначительному (см. \ref{it:noaliasing})
+        то уменьшением шага дискретизации эффект наложения спектра можно свести к незначительному (см. \ref{it:noaliasing}).
         \clearpage
         \item
         \label{it:noaliasing}
@@ -402,14 +402,58 @@
             \includegraphics[width=\linewidth]{f1fig5}
             \label{pic:f1:5}
         \end{figure} \\
-        Здесь хорошо видно, что, хотя эффект наложения спектра не устранён полностью, он практически незаметен.
+        Здесь хорошо видно, что, хотя эффект наложения спектра не устранён полностью, он практически незаметен, а сдвинутые части аналитического преобразования почти равны нулю.
     \end{enumerate}
     % subsection f1 (end)
     % section plotting (end)
     \clearpage
     \subsection{\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)} % (fold)
     \label{sub:f2}
-    
+    Данная функция имеет разрыв типа "<скачок"> в точке 0,
+    равно как и мнимая часть её преобразования Фурье~\eqref{eq:fourier:f2}:\\
+    \begin{align*}
+        \lim\limits_{t \rightarrow 0+0} f_2(t) &\not= \lim\limits_{t \rightarrow 0-0} f_2(t) \\
+        \lim\limits_{\lambda \rightarrow 0+0} Im(\mathfrak{F_2}(\lambda))\,&\not=\,\lim\limits_{\lambda \rightarrow 0-0}\,Im(\mathfrak{F_2}(\lambda)
+    \end{align*}
+    \begin{enumerate}
+        \item
+        \label{it:noise}
+        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-10, 10] \), \texttt{outLimVec} = \( [-2\pi, 2\pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f2fig1}
+            \label{pic:f2:1}
+        \end{figure} \\
+        Отклонение вещественной численной аппроксимации от аналитического значение есть величина порядка \texttt{step},
+        а мнимые части графиков практически совпадают во всех точках.
+        Заметим, что в точке 0 разрыва функции \(\mathfrak{F_2}\), а также в некоторых других точках непрерывности возникла \emph{рябь}.
+        Её появление в точке разрыва первого рода обусловливается свойством преобразования Фурье разрывной функции из \cite{Roublev:fourier},
+        а в некоторых точках непрерывности ~--- малым размером окна \([a, b]\) (\texttt{inpLimVec}).\\
+        Устранить рябь в точке разрыва не представляется возможным, однако можно сгладить её в остальных точках, увеличив окно \texttt{inpLimVec}.
+        \clearpage
+        \item
+        \label{it:lessnoise}
+        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-50, 50] \), \texttt{outLimVec} = \( [-2\pi, 2\pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f2fig2}
+            \label{pic:f2:2}
+        \end{figure} \\
+        Как можно видеть, размер ряби стал значительно меньше. Как и в предыдущем случае, отклонение вещественной части численной аппроксимации от аналитического значение
+        есть величина порядка \texttt{step}.
+        \clearpage
+        \item
+        \label{it:fftnoise}
+        \texttt{step} = \(10^{-3}\), \texttt{inpLimVec} = \( [-10, 20] \), \texttt{outLimVec} = \( [-2\pi, 2\pi] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f2fig3}
+            \label{pic:f2:3}
+        \end{figure} \\
+        В точке разрыва на графике вещественной части у численной аппроксимации наблюдается шум иного рода, порядка выше \texttt{step}; 
+        это обусловливается особенностью работы функции \texttt{fft(\dots)} на несимметричном окне \([a, b]\) (\texttt{inpLimVec}).
+    \end{enumerate}
+    \clearpage
     % subsection f2 (end)
     \appendix
     \section{Код функции \texttt{plotFT}} % (fold)
@@ -513,5 +557,6 @@ end
         \bibitem{RoublevTochilin:matlab} И. В.~Рублёв, П. А.~Точилин. Лекционный курс \emph{Программирование на языке \texttt{MATLAB}},
         кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
+        \bibitem{Matlab:help} Справочные средства языка \texttt{MATLAB}
     \end{thebibliography}
 \end{document}
