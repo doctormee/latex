@@ -1,4 +1,4 @@
-\documentclass[11pt, oneside, draft]{article} 
+\documentclass[11pt, oneside, final]{article} 
 \usepackage[utf8]{inputenc} 
 \usepackage{a4wide} 
 \usepackage[russian]{babel} 
@@ -123,12 +123,12 @@
             \bitem[nPoints] ~--- число вычисляемых узлов сеточной функции, рассчитываемое по формуле:
             \begin{equation}
             \label{eq:npoints}
-                nPoints = \Bigl\lfloor {\dfrac{(b - a)}{step}}\Bigr\rfloor 
+                \mathtt{nPoints} = \Bigl\lfloor {\dfrac{(b - a)}{\mathtt{step}}}\Bigr\rfloor 
             \end{equation}
             \bitem[step] ~--- поправленное значение шага дискретизации \(\Delta t\), рассчитываемое по формуле:
             \begin{equation}
             \label{eq:step}
-                step= \dfrac{(b - a)}{nPoints - 1}
+                \mathtt{step} = \dfrac{(b - a)}{\mathtt{nPoints} - 1}
             \end{equation}
             \bitem[inpLimVec] ~--- окно \([a, b]\) для функции \(f(t)\)
             \bitem[outLimVec] ~--- окно \([c, d]\) для вывода графика преобразования Фурье \(\fft\) 
@@ -317,7 +317,7 @@
             \boxed{ \mathfrak{F_2}(\lambda) = i\left(\pi\sgn(\lambda) - 2\arctg(\lambda)\right) } 
         \end{equation}
     \end{statement}
-    \begin{proof}(
+    \begin{proof}
         Аналогично \eqref{factor:f1} представим \(f_2(t) \) в виде: 
         \begin{equation}\label{factor:f2} 
             f_2(t) = g_1(t) \cdot g_2(t) \text{ где } g_1(t) = \left(e^{-|t|} - 1\right)\text{, } g_2(t) = \dfrac{1}{t} 
@@ -389,14 +389,14 @@
         из \cite{Roublev:fourier} известно, что эффект не будет проявляться при \(\Delta t \leqslant \Delta_{t}^\text{н}\),
         где \(\Delta_{t}^\text{н} = \frac{\pi}{\Lambda}\) ~--- так называемая частота Найквиста (Nyquist rate).
         Однако, в силу того, что спектр полученного аналитически преобразования Фурье \eqref{eq:fourier:f1} 
-        неограничен (т.е. \(\not\exists\Lambda \, \colon \mathfrak{F_1}(\lambda) = 0, \; \forall \lambda \colon |\lambda| > \Lambda\)),
+        неограничен (т.е. \(\forall \Lambda \; \exists \lambda \colon |\lambda| > \Lambda, \, \mathfrak{F_1}(\lambda) \not = 0 \)),
         полное устранение данного эффекта невозможно;
         но, т.к. аналитическое преобразование достаточно быстро стремится к нулю (со скоростью порядка \(\frac{1}{\lambda^2}\)), 
         то уменьшением шага дискретизации эффект наложения спектра можно свести к незначительному (см. \ref{it:noaliasing}).
         \clearpage
         \item
         \label{it:noaliasing}
-        \texttt{step} = \(10^{-1}\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [\pi, \pi] \)
+        \texttt{step} = \(10^{-1}\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [-\pi, \pi] \)
         \begin{figure}[!h]
             \centering
             \includegraphics[width=\linewidth]{f1fig5}
@@ -454,6 +454,7 @@
         это обусловливается особенностью работы функции \texttt{fft(\dots)} на несимметричном окне \([a, b]\) (\texttt{inpLimVec}).
     \end{enumerate}
     \clearpage
+    
     % subsection f2 (end)
     \subsection{\( f_3(t) = \dfrac{\arctg{t^2}}{1 + t^4}\)} % (fold)
     \begin{enumerate}
