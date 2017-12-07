@@ -8,6 +8,7 @@
 \usepackage{amsfonts} 
 \usepackage{amssymb} 
 \usepackage{amsthm}
+\usepackage{epstopdf}
 \usepackage[perpage]{footmisc}
 %\newtheoremstyle{mytheorem}% name of the style to be used
 %  {}% measure of space to leave above the theorem. E.g.: 3pt
@@ -379,7 +380,7 @@
     \begin{enumerate}
         \setcounter{enumi}{\value{icount}}
         \item 
-        \texttt{step} = \(1\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [\pi, \pi] \)
+        \texttt{step} = \(1\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [-\pi, \pi] \)
         \begin{figure}[!h]
             \centering
             \includegraphics[width=\linewidth]{f1fig4}
@@ -405,6 +406,7 @@
         Здесь хорошо видно, что, хотя эффект наложения спектра не устранён полностью, он практически незаметен, а сдвинутые части аналитического преобразования почти равны нулю.
     \end{enumerate}
     % subsection f1 (end)
+    \clearpage
     % section plotting (end)
     \clearpage
     \subsection{\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)} % (fold)
@@ -471,7 +473,7 @@
         \clearpage
         \item
         \label{it:f32}
-        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-10, 10] \), \texttt{outLimVec} = \( [-\pi, pi] \)
+        \texttt{step} = \(10^{-2}\), \texttt{inpLimVec} = \( [-10, 10] \), \texttt{outLimVec} = \( [-\pi, \pi] \)
         \begin{figure}[!h]
             \centering
             \includegraphics[width=\linewidth]{f3fig2}
@@ -479,9 +481,33 @@
         \end{figure} \\
         Несмотря на изменение всех параметров, вид графиков существенно не поменялся.
     \label{sub:f3}
-    
     \end{enumerate}
     % subsection f3 (end)
+    \clearpage
+    \subsection{\( f_4(t) = t^3e^{-t^4}  \)} % (fold)
+    \label{sub:f4}
+    \begin{enumerate}
+        \item 
+        \label{it:f41}
+        \texttt{step} = \(10^{-5}\), \texttt{inpLimVec} = \( [-20, 20] \), \texttt{outLimVec} = \( [-15, 15] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f4fig1}
+            \label{pic:f4:1}
+        \end{figure} \\
+        Аналогично \ref{sec:plotting}.\ref{sub:f3}.\ref{it:f31} можно сделать вывод, что \(Re(\four) = 0, \; \forall \lambda \). 
+        \clearpage
+        \item
+        \label{it:f42}
+        \texttt{step} = \(10^{-3}\), \texttt{inpLimVec} = \( [0, 10] \), \texttt{outLimVec} = \( [-15, 15] \)
+        \begin{figure}[!h]
+            \centering
+            \includegraphics[width=\linewidth]{f4fig2}
+            \label{pic:f4:2}
+        \end{figure} \\
+        Изменение параметров также не влияет на вид графиков
+    \end{enumerate}
+    \clearpage
     \appendix
     \section{Код функции \texttt{plotFT}} % (fold)
     \label{lst:code}
