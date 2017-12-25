@@ -17,7 +17,7 @@
 %  {}% measure of space to indent
 %  {}% name of head font
 %  {:}% punctuation between head and body
-%  { }% space after theorem head; " " = normal interword space
+%  { }% space after theorem head; " " = normal interword spacewww
 %  {}% Manually specify head
 %\theoremstyle{mytheorem}
 \numberwithin{equation}{section} 
@@ -102,14 +102,15 @@
             f_2(t) &= \dfrac{e^{-|t|} - 1}{t} \\
             f_3(t) &= \dfrac{\arctg{t^2}}{1 + t^4} \\
             f_4(t) &= t^3e^{-t^4} 
-       \end{aligned} 
+       \end{aligned}
        \right. 
     \end{equation} 
-    Для каждой функции из системы \eqref{functions} требуется: \begin{enumerate} \item
-    Получить аппроксимацию преобразования Фурье \( F(\lambda)\) для каждой функции \(f(t)\) из заданного набора при помощи быстрого преобразования Фурье ({\bfseries БПФ / FFT}),
-    выбирая различные шаги дискретизации исходной функции и различные окна, ограничивающие область определения \(f(t)\) \item Построить графики \(F(\lambda)\) \item Для функций
-    \(f_1(t)\) и \(f_2(t)\) из заданного набора вычислить аналитически преобразование Фурье \begin{equation}\label{fourier_transform} \boxed{\four = \intinf[{f(t) e^{-i\lambda t}\,
-    dt}]} \end{equation} и сравнить графики \( \four \) с графиками \( F(\lambda)\), полученного из аппроксимации через {\bfseries БПФ}\\ \end{enumerate}
+    Для каждой функции из системы \eqref{functions} требуется: 
+    \begin{enumerate} 
+        \item Получить аппроксимацию преобразования Фурье \( F(\lambda)\) для каждой функции \(f(t)\) из заданного набора при помощи быстрого преобразования Фурье ({\bfseries БПФ / FFT}),    выбирая различные шаги дискретизации исходной функции и различные окна, ограничивающие область определения \(f(t)\)
+        \item Построить графики \(F(\lambda)\)
+        \item Для функций  \(f_1(t)\) и \(f_2(t)\) из заданного набора вычислить аналитически преобразование Фурье \begin{equation}\label{fourier_transform} \boxed{\four = \intinf[{f(t) e^{-i\lambda t}\, dt}]} \end{equation} и сравнить графики \( \four \) с графиками \( F(\lambda)\), полученного из аппроксимации через {\bfseries БПФ}\\
+    \end{enumerate}
     %Formal task
 
     \subsection{Формальная~постановка~задачи} 
