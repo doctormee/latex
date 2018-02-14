@@ -110,7 +110,7 @@
         \dot x = Ax + u + f,\:t \in [t_0, +\infty)
     \end{equation}
     Здесь, \(x, f \in \real^2, \, A \in \real^{2\times2}, \, u \in \real^2 \).
-     Кроме того, на управление u наложено дополнительное ограничение \(u \in \mathcal{P} \). Пусть \( \mathcal{X}_0 \)~---~начальное множество значений фазового вектора, \( \mathcal{X}_1 \)~---~целевое множество значений фазового вектора. Для заданных множеств \( \mathcal{X}_0 ,\, \mathcal{X}_1, \, \mathcal{P} \) необходимо решить задачу быстродействия, т.е. найти минимальное время \(T > 0 \), за которое траектория системы, выпущенная в момент времени \( t_0 \) из некоторой точки множества \( \mathcal{X}_0 \), может попасть в некоторую точку множества \( \mathcal{X}_1 \). 
+     Кроме того, на управление \( u \) наложено дополнительное ограничение \(u \in \mathcal{P} \). Пусть \( \mathcal{X}_0 \)~---~начальное множество значений фазового вектора, \( \mathcal{X}_1 \)~---~целевое множество значений фазового вектора. Для заданных множеств \( \mathcal{X}_0 ,\, \mathcal{X}_1, \, \mathcal{P} \) необходимо решить задачу быстродействия, т.е. найти минимальное время \(T > 0 \), за которое траектория системы, выпущенная в момент времени \( t_0 \) из некоторой точки множества \( \mathcal{X}_0 \), может попасть в некоторую точку множества \( \mathcal{X}_1 \). 
     \begin{gather}
         \label{task:P} 
         \mathcal{P} = p + \left\{ (x_1, x_2) \in \real^2 \, \colon 9x_1^2 + 4x_2^2 \leqslant r \right\}, \; p \in \real ^2; \\
@@ -130,11 +130,12 @@
     \label{sub:formal}
     \begin{enumerate}
         \item Провести необходимые исследования системы \eqref{task:system} и привести сопутствующие теоретические выкладки;
-        \item Реализовать на языке MATLAB программу, удовлетворяющую условиям из \ref{sub:general}. Для этого, реализовать:
+        \item \label{enum:method} Разработать и описать численный метод решения задачи и возникающих подзадач;
+        \item Реализовать на языке MATLAB программу, удовлетворяющую условиям из \ref{sub:general} и реализующую численный метод из пункта \ref{enum:method}.
+        Для этого, реализовать:
         \begin{itemize}
             \item  Пользовательский интерфейс ввода исходных данных;
-            \item  Алгоритм проверки разрешимости системы \eqref{task:system} при введённых значениях параметров;
-            \item  Алгоритм поиска управлений и траекторий, подозрительных на оптимальные, а также алгоритм отбора из них оптимальных;
+            \item  Алгоритм поиска управлений и траекторий, подозрительных на оптимальные, а также алгоритм отбора из них оптимальных (при наличии таковых);
             \item  Алгоритм и интерфейс построения требуемых графиков;
             \item  Алгоритм локального и глобального улучшения решения; 
             \item  Алгоритм сохранения и загрузки промежуточных данных, значений параметров и полученных ответов.
@@ -147,14 +148,48 @@
     Прежде всего, установим принцип максимума Понтрягина в следующей формулировке:\footnote{Доказательство приведено, например, в \cite{Pontr'yaginEtAl:maximum}}
     \begin{PMP}[В формулировке из \cite{RoublevTochilin:matlab}]
         \label{th:max}
-        Пусть \((u^{*}(\cdot), x^{*}(\cdot))\)~--- оптимальная пара. Тогда \(\exists \psi(t) \in C^1[t_0, t_1],\: t \in [t_0, t_1]\!: \)
+        Пусть \((u^{*}(\cdot), x^{*}(\cdot))\)~--- оптимальная пара. Тогда существует \(\psi(t) \in AC[t_0, t_1],\: t \in [t_0, t_1]\!: \)
         \begin{align}
-            \dot \psi =& -\!A^{\tau}\psi \label{eq:conj} \\
-            \scalar{Bu^{*}(t)}{\psi(t)} =& \, \rho(\psi(t)|BP) \label{eq:optimum} \\ 
+            \dot \psi =& -\!A^{T}\psi \label{eq:conj} \\
+            \scalar{Bu^{*}(t)}{\psi(t)} =& \, \rho(\psi(t)|B\mathcal{P}) \label{eq:optimum} \\ 
             \scalar{\psi(t_0)}{x^{*}(t_0)} =& \, \rho(\psi(t_0)|\mathcal{X}_0) \label{eq:trans:1} \\
             \scalar{-\psi(t_1)}{x^{*}(t_1)} =& \, \rho(-\psi(t_1)|\mathcal{X}_1) \label{eq:trans:2}            
         \end{align}
     \end{PMP}
+    \noindent Систему \eqref{eq:conj} называют \emph{сопряжённой системой}, её решение \(\psi = \psi(t)\)~--- \emph{сопряжёнными переменными}, а условия \eqref{eq:trans:1} и \eqref{eq:trans:2}~--- \emph{условиями трансверсальности}. Условие \eqref{eq:optimum} позволяет выделить из всех возможных управлений семейство "<подозрительных">  на оптимальные. \\
+    Для того, чтобы однозначно определить решение системы \eqref{eq:conj}, нам необходимо присовокупить к ней некоторые начальные условия. В результате получим задачу Коши
+    для сопряжённой системы:
+    \begin{equation}
+        \left\{
+        \label{eq:cauchy}
+        \begin{aligned}
+            & \dot \psi(t) = -\!A^{T}\psi(t), \ t \in [t_0, t_1] \\
+            &\left[
+            \begin{aligned}
+                & \psi(t_0) = \psi_0 \\
+                & \psi(t_1) = \psi_1
+            \end{aligned}
+            \right.
+        \end{aligned}
+        \right.
+    \end{equation} 
+    Условие \eqref{eq:optimum}, в силу свойств скалярного произведения, можно переписать в следующем виде:
+    \begin{equation*}
+        \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \rho(B^{T}\psi(t)|\mathcal{P}) \label{eq:optimum2}  
+    \end{equation*}
+    В свою очередь, раскрыв определение опорной функции множества \(\mathcal{P}\) в направлении \(B^{T}\psi(t)\), окончательно получим:
+    \begin{equation}
+        \label{eq:optimum:final}
+        \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \sup_{u(t)\in\mathcal{P}}\scalar{B^{T}\psi(t)}{u(t)}
+    \end{equation}
+    Заметим, что множество \(\mathcal{P}\) (см. \eqref{task:P}) есть эллипсоид \( \mathcal{E}(p, P)\), где \(P = 
+    \left(\begin{smallmatrix} \frac{1}{3} & 0 \\ 0 & \frac{1}{2} \end{smallmatrix}\right)\)~--- матрица конфигурации.
+    Из \cite{Roublev:optimal:linear} известно, что решение уравнения \eqref{eq:optimum:final} \(u^{*}(t)\) представимо в виде:
+    \begin{equation}
+    \label{eq:control}
+    u^{*}(t) = p + \dfrac{PB^{T}\psi(t)}{\sqrt{\scalar{B^{T}\psi(t)}{PB^{T}\psi(t)}}}
+    \end{equation}
+    Данное выражение корректно при \(B \neq 0\), так как из \cite{Roublev:optimal:nonlinear} и \cite{Pontr'yaginEtAl:maximum} известно, что \(\psi(t) \neq 0\) для любого допустимого \(t\), а \(P \neq 0\).
     \section{Написание функции \texttt{plotFT} } % (fold)
     \label{sec:programm}
     \subsection{Разбиение на подзадачи} % (fold)
@@ -237,7 +272,7 @@
        \begin{property}\label{property:linear} 
            \mdseriesПусть 
            \begin{gather*}
-               f(t) = \alpha \cdot f_1(t) + \beta \cdot f_2(t) \text{ , и } \left\{ 
+               f(t) = \alpha \cdot f_1(t) + \beta \cdot f_2(t) \text{, и } \left\{ 
                \begin{aligned}
                    f_1(t) &\rarrow \mathfrak{F_1}(\lambda) \\
                    f_2(t) &\rarrow \mathfrak{F_2}(\lambda) 
@@ -279,7 +314,7 @@
        %delta
        Установим также важное отношения для свёртки дельта-функции с произвольной функцией \(\varphi(t)\): 
        \begin{align}\label{delta:conv}
-           \boxed{\left(\delta * \varphi \right) (s) = \intinf[{\delta(s - \tau) \cdot \varphi(\tau)\, d\tau} = \varphi(s)]} 
+           \boxed{\left(\delta * \varphi \right) (s) = \intinf[{\delta(s - T) \cdot \varphi(T)\, dT} = \varphi(s)]} 
        \end{align}
 
        \noindent Докажем следующее соотношение: 
@@ -317,7 +352,7 @@
            Пользуясь этим соотношением, выражениями для преобразований Фурье \(g_1(t)\) \eqref{fourier:exp_abs} и \(g_2(t)\) \eqref{fourier:cos}, установленным свойством \ref{property:product} и соотношением \eqref{delta:conv} для свёртки с дельта-функцией, получим:
            \[ 
            \begin{split}
-               \mathfrak{F_1} (\lambda) &= \dfrac{1}{2\pi} \intinf[{\dfrac{4}{4 + \tau^2} \cdot \pi(\delta(\lambda - \tau- 1) + \delta(\lambda + 1 - \tau))\,d\tau}] = \\
+               \mathfrak{F_1} (\lambda) &= \dfrac{1}{2\pi} \intinf[{\dfrac{4}{4 + T^2} \cdot \pi(\delta(\lambda - T- 1) + \delta(\lambda + 1 - T))\,dT}] = \\
                &=\dfrac{2}{4 + (\lambda - 1)^2} + \dfrac{2}{4 + (\lambda + 1)^2} = \dfrac{4(\lambda^2 + 5)}{\lambda^4 + 6\lambda^2 + 25} 
            \end{split}
            \]
@@ -343,7 +378,7 @@
            \begin{split} 
                f_2(t) \rarrow \mathfrak{F_2} (\lambda) &= \intinf[{ \dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] = 
                \dfrac{1}{\pi}\left[\left({\dfrac{1}{1 + (\cdot)^2} - \pi\delta(\cdot)}\right) * \left({-i \pi \sgn(\cdot)}\right)\right] \negmedspace({\lambda}) = \\
-               &= -i\int\limits_{\lambda}^{+\infty}{\dfrac{1}{1 + \tau^2}\, d\tau} + i\int\limits_{-\infty}^{\lambda}{\dfrac{1}{1 + \tau^2}\, d\tau} + \pi i \sgn(\lambda) = \\
+               &= -i\int\limits_{\lambda}^{+\infty}{\dfrac{1}{1 + T^2}\, dT} + i\int\limits_{-\infty}^{\lambda}{\dfrac{1}{1 + T^2}\, dT} + \pi i \sgn(\lambda) = \\
                &= i\left(\pi \sgn(\lambda) - 2\arctg(\lambda)\right) 
            \end{split}
            \]
@@ -352,9 +387,15 @@
     % section code (end)
     \begin{thebibliography}{0}
         \addcontentsline{toc}{section}{Список литературы}
-        \bibitem{RoublevTochilin:matlab} Точилин~П.~А.~. \emph{Лекционный курс Программирование на языке \texttt{MATLAB}},
+        \bibitem{Roublev:optimal:linear} И. В.~Рублёв. \emph{Лекционный курс Оптимальное Управление (Линейные Системы)},
         кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
         2017
+        \bibitem{Roublev:optimal:nonlinear} И. В.~Рублёв. \emph{Лекционный курс Оптимальное Управление (Нелинейные Системы)},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        2018
+        \bibitem{RoublevTochilin:matlab} Точилин~П.~А. \emph{Лекционный курс Программирование на языке \texttt{MATLAB}},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        2017~-- 2018
         \bibitem{Pontr'yaginEtAl:maximum} Понтрягин Л. С., Болтянский В. Г., Гамкрелидзе Р. В., Мищенко Е. Ф.~\emph{Математическая~теория~оптимальных~процессов}, — М.: Наука, 1976.
         \bibitem{Matlab:help} Справочные средства языка \texttt{MATLAB}
     \end{thebibliography}
