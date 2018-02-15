@@ -145,10 +145,12 @@
     \pagebreak
     \section{Некоторые~необходимые~теоретические~выкладки}
     \label{sec:theory}
+    \subsection{Принцип максимума} % (fold)
+    \label{sub:maximum}
     Прежде всего, установим принцип максимума Понтрягина в следующей формулировке:\footnote{Доказательство приведено, например, в \cite{Pontr'yaginEtAl:maximum}}
     \begin{PMP}[В формулировке из \cite{RoublevTochilin:matlab}]
         \label{th:max}
-        Пусть \((u^{*}(\cdot), x^{*}(\cdot))\)~--- оптимальная пара. Тогда существует \(\psi(t) \in AC[t_0, t_1],\: t \in [t_0, t_1]\!: \)
+        Пусть \((u^{*}(\cdot), x^{*}(\cdot))\)~--- оптимальная пара. \\ Тогда существует \(\psi(t) \in AC[t_0, t_1], \psi(t) \neq 0 \ \forall t \in [t_0, t_1]\!: \)
         \begin{align}
             \dot \psi =& -\!A^{T}\psi \label{eq:conj} \\
             \scalar{Bu^{*}(t)}{\psi(t)} =& \, \rho(\psi(t)|B\mathcal{P}) \label{eq:optimum} \\ 
@@ -157,22 +159,26 @@
         \end{align}
     \end{PMP}
     \noindent Систему \eqref{eq:conj} называют \emph{сопряжённой системой}, её решение \(\psi = \psi(t)\)~--- \emph{сопряжёнными переменными}, а условия \eqref{eq:trans:1} и \eqref{eq:trans:2}~--- \emph{условиями трансверсальности}. Условие \eqref{eq:optimum} позволяет выделить из всех возможных управлений семейство "<подозрительных">  на оптимальные. \\
-    Для того, чтобы однозначно определить решение системы \eqref{eq:conj}, нам необходимо присовокупить к ней некоторые начальные условия. В результате получим задачу Коши
+    \subsection{Исследование сопряжённой системы} % (fold)
+    \label{sub:conjugate}
+    Для того, чтобы однозначно определить решение системы \eqref{eq:conj}, нам необходимо присовокупить к ней некоторые начальные условия. Мы, для удобства решения, будем рассматривать \(\psi(t_0) = \psi_0\). В результате получим задачу Коши
     для сопряжённой системы:
     \begin{equation}
         \left\{
         \label{eq:cauchy}
         \begin{aligned}
             & \dot \psi(t) = -\!A^{T}\psi(t), \ t \in [t_0, t_1] \\
-            &\left[
-            \begin{aligned}
-                & \psi(t_0) = \psi_0 \\
-                & \psi(t_1) = \psi_1
-            \end{aligned}
-            \right.
+            & \psi(t_0) = \psi_0 
         \end{aligned}
         \right.
     \end{equation} 
+    Тогда, решение этой системы представимо в виде:
+    \begin{equation}
+        \label{eq:psi_final}
+        \psi(t) = e^{-A^{T}(t - t_0)}\psi_0
+    \end{equation}
+    \subsection{Выделение нужных управлений и траекторий} % (fold)
+    \label{sub:pseudo_optimum}
     Условие \eqref{eq:optimum}, в силу свойств скалярного произведения, можно переписать в следующем виде:
     \begin{equation*}
         \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \rho(B^{T}\psi(t)|\mathcal{P}) \label{eq:optimum2}  
@@ -183,207 +189,50 @@
         \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \sup_{u(t)\in\mathcal{P}}\scalar{B^{T}\psi(t)}{u(t)}
     \end{equation}
     Заметим, что множество \(\mathcal{P}\) (см. \eqref{task:P}) есть эллипсоид \( \mathcal{E}(p, P)\), где \(P = 
-    \left(\begin{smallmatrix} \frac{1}{3} & 0 \\ 0 & \frac{1}{2} \end{smallmatrix}\right)\)~--- матрица конфигурации.
-    Из \cite{Roublev:optimal:linear} известно, что решение уравнения \eqref{eq:optimum:final} \(u^{*}(t)\) представимо в виде:
+    \left(\begin{smallmatrix} \frac{\sqrt{r}}{3} & 0 \\ 0 & \frac{\sqrt{r}}{2} \end{smallmatrix}\right)\)~--- матрица конфигурации.
+    Из \cite{Roublev:optimal:linear} известно, что решение \(u^{*}(t)\) уравнения~\eqref{eq:optimum:final}  представимо в виде:
     \begin{equation}
     \label{eq:control}
-    u^{*}(t) = p + \dfrac{PB^{T}\psi(t)}{\sqrt{\scalar{B^{T}\psi(t)}{PB^{T}\psi(t)}}}
+        u^{*}(t) = p + \dfrac{PB^{T}\psi(t)}{\sqrt{\scalar{B^{T}\psi(t)}{PB^{T}\psi(t)}}}
     \end{equation}
-    Данное выражение корректно при \(B \neq 0\), так как из \cite{Roublev:optimal:nonlinear} и \cite{Pontr'yaginEtAl:maximum} известно, что \(\psi(t) \neq 0\) для любого допустимого \(t\), а \(P \neq 0\).
-    \section{Написание функции \texttt{plotFT} } % (fold)
-    \label{sec:programm}
-    \subsection{Разбиение на подзадачи} % (fold)
-    \label{sub:tasks}
-    Написание функции \texttt{plotFT} удобно делать по частям, разбив поставленнию задачу на следующие подзадачи
-    \begin{enumerate}
-        \item Вычисление аппроксимации преобразования Фурье
-        \item Подготовка фигуры к выводу графиков
-        \item Вывод графиков быстрого и, при необходимости, аналитического преобразований Фурье 
-    \end{enumerate}
-    Соответственно, будем решать подзадачи в приведённом порядке, приводя необходимые выкладки и теоретические обоснования\footnote{Полный код функции \texttt{plotFT} приведён в приложении~\ref{lst:code} (стр.~\pageref{lst:code})}.
-    % subsection tasks (end)
-    \subsection{Вычисление аппроксимации преобразования Фурье} % (fold)
-    \label{sub:fft}
-    \begin{enumerate}
-        \item 
-        Найдем число вычисляемых узлов сеточной функции \texttt{nPoints}, хранимое в переменной \texttt{n} по формуле~\eqref{eq:npoints}:
-        \begin{verbatim}
-            a = inpLimVec(1);
-            b = inpLimVec(2);
-            n = floor((b - a) ./ step) + 1;
-        \end{verbatim}
-        \item 
-        Откорректируем значение шага \texttt{step} в соответствии с числом точек (формула~\eqref{eq:step}):
-            \begin{verbatim}
-                step = (b - a) ./ (n - 1);
-            \end{verbatim}
-        \item 
-        Вычислим на сетке \([a, b]\), состоящей из \texttt{n} точек значения самой функции \(f(t)\), тем самым получим дискретизацию \(f_\text{дискр}(t)\),
-        затем воспользуемся функциями MATLAB \texttt{fft()} и \texttt{fftshift()}, первая из которых вычисляет дискретное преобразование Фурье (\textbf{ДПФ}) 
-        функции \(f_\text{дискр}(t)\), однако возвращает вектор значений в зеркальном виде, а вторая ~--- "<отзеркаливает"> этот вектор, приводя его к нормальному виду\footnote{Здесь и далее все использованные средства языка \texttt{MATLAB} и спецификации взяты из \cite{RoublevTochilin:matlab} и \cite{Matlab:help}}. 
-        Искомая аппроксимация преобразования Фурье \(F(\lambda)\) вычисляется по следующей формуле (доказательство её справедливости приведено в \cite{Roublev:fourier}):
-        \begin{equation} \label{eq:from_discr}
-            F(\lambda) = \mathtt{step} \cdot F_\text{дискр}(\lambda)
-        \end{equation}
-        Здесь \( F_\text{дискр}(\lambda) \) ~--- вектор значений \textbf{ДПФ} функции \(f_\text{дискр}(t)\), полученный путем применения 
-        \texttt{fftshift(fft(\dots))} к вектору значений \(f_\text{дискр}(t)\) на заданной сетке.\\
-        Приведём, в заключение, общую схему работы данного этапа:
-        \[
-            f(t) \xrightarrow[\text{на сетке}]{\text{дискретизация}} f_\text{дискр}(t)
-            \xrightarrow{\mathtt{fftshift(fft())}} F_\text{дискр}(\lambda) 
-            \xrightarrow{\eqref{eq:from_discr}} F(\lambda)
-        \]
-        \clearpage
-        \item
-        Преобразование Фурье рассматривается на отрезке \small{\(\left[\frac{-\pi}{\Delta t}, \frac{\pi}{\Delta t}\right]\)}, длины \(2\pi/\Delta t\), 
-        разбитом на \texttt{nSteps} точек. Обратившись к \cite{Roublev:fourier}, установим следующее свойство преобразования Фурье: 
-        \[
-            \boxed{f(t - t_0) \rarrow e^{-i\lambda t_0}F(\lambda)}
-        \]
-        Соответственно, для получения желаемого результата, полученный вектор значений \textbf{ДПФ} следует домножить на соответствующие значения экспоненты.
-    \end{enumerate}
-    \subsection{Подготовка фигуры к выводу графиков} % (fold)
-    \label{sub:prepare_graphs}
-    В поле \texttt{UserData} фигуры \texttt{fHandle} будем хранить \texttt{handle} двух соответствующих осей (\texttt{axes}),
-    а также окно вывода по оси абсцисс \(\lambda\). В случае, если \texttt{UserData} у поданной фигуры пуст, сформируем его, построив две оси для вещественной и мнимой частей
-    преобразования Фурье, соответствующим образом выбирая окно вывода: для этого просматриваем вектор значений \textbf{ДПФ} и находим левую и правую границы, на которых значение
-    превышает некоторое \(\varepsilon\), обозначенное в программе как \texttt{moe} (англ. \emph{margin of error}). 
-    При наличии у фигуры поля \texttt{UserData}, но отсутствии в нём осей и/или пределов, дополним недостающие поля аналогичным образом.
-    Наконец, сформированную структуру запишем в поле \texttt{UserData} фигуры \texttt{fHandle}.
-    \subsection{Вывод графиков} % (fold)
-    \label{sub:plotting}
-    Вывод графиков осуществляется стандартными средствами языка MATLAB, при этом, если поле \texttt{fFTHandle} не пусто, то выводится и график функции, на которую
-    указывает \texttt{fFTHandle}.
-    % subsection plotting (end)
-    % subsection \xD0\xBF\xD0\xBE\xD0\xB4\xD0\xB3\xD0\xBE\xD1\x82\xD0\xBE\xD0\xB2\xD0\xBA\xD0\xB0 (end)
-    % section programm (end)
-    %fourier
-    \clearpage
-       \section{Вычисление~аналитических~преобразований~Фурье}
-
-       \subsection{Некоторые~необходимые~обозначения~и~соотношения}
-       Напомним, что преобразование Фурье \( \four \) функции \(f(t)\) задаётся формулой \eqref{fourier_transform}: 
-       \begin{align*}
-           \four = \intinf[ {f(t) e^{-i\lambda t}\, dt}] 
-       \end{align*}
-       Впредь, будем для краткости писать:
-       \[ \boxed{ f(t)\rarrow\four} \]
-       Напомним также следующие свойства преобразования Фурье:
-       \begin{property}\label{property:linear} 
-           \mdseriesПусть 
-           \begin{gather*}
-               f(t) = \alpha \cdot f_1(t) + \beta \cdot f_2(t) \text{, и } \left\{ 
-               \begin{aligned}
-                   f_1(t) &\rarrow \mathfrak{F_1}(\lambda) \\
-                   f_2(t) &\rarrow \mathfrak{F_2}(\lambda) 
-               \end{aligned}
-               \right. 
-           \end{gather*}
-           \\
-           Тогда:
-           \[ f(t) \rarrow \alpha \cdot \mathfrak{F_1}(\lambda) + \beta \cdot \mathfrak{F_2}(\lambda) \]
-       \end{property}
-       \begin{property}\label{property:product} 
-           \mdseriesПусть 
-           \begin{gather*}
-               f(t) = f_1(t) \cdot f_2(t) \text{ , и } \left\{ 
-               \begin{aligned}
-                   f_1(t) &\rarrow \mathfrak{F_1}(\lambda) \\
-                   f_2(t) &\rarrow \mathfrak{F_2}(\lambda) 
-               \end{aligned}
-               \right. 
-           \end{gather*}
-           \\
-           Тогда:
-           \[ 2\pi f_1(t) \cdot f_2(t) \rarrow (\mathfrak{F_1 * F_2)}(\lambda) \text{ , где }(\mathfrak{F_1 * F_2})(\lambda) = \intinf[{\bigl[\mathfrak{F_1}(\lambda - s) \cdot \mathfrak{F_2}(s)\bigr] \, ds}] \]
-       \end{property}
-       \noindentОтметим некоторые тривиальные\footnote{Вывод этих преобразований, а также доказательства свойств~\eqref{property:linear} и~\eqref{property:product} можно найти в \cite{Roublev:fourier}} преобразования Фурье: 
-       \begin{flalign}\label{fourier:delta}
-           \delta(\lambda) &\rarrow 1 \\
-           \label{fourier:1} 1 &\rarrow 2\pi\delta(\lambda) \\
-           \label{fourier:exp} e^{iat} &\rarrow 2\pi\delta(\lambda - a) \\
-           \label{fourier:cos} \cos(t) = \frac{e^{it} + e^{-it}}{2} & \rarrow \pi(\delta(\lambda - 1) + \delta(\lambda + 1)) \\
-           \label{fourier:1/t} \dfrac{1}{t} &\rarrow -i \pi \sgn(t) 
-       \end{flalign}
-       Где \( \delta(t) = 
-       \begin{cases}
-           +\infty,& t = 0 \\
-           0,& t \not= 0 
-       \end{cases}
-       \)~--- дельта-функция Дирака, а соотношение \eqref{fourier:cos} вытекает из свойства~\ref{property:linear}, с учётом \eqref{fourier:exp}. \\
-       %delta
-       Установим также важное отношения для свёртки дельта-функции с произвольной функцией \(\varphi(t)\): 
-       \begin{align}\label{delta:conv}
-           \boxed{\left(\delta * \varphi \right) (s) = \intinf[{\delta(s - T) \cdot \varphi(T)\, dT} = \varphi(s)]} 
-       \end{align}
-
-       \noindent Докажем следующее соотношение: 
-       \begin{lemma}
-           \begin{equation}\label{fourier:exp_abs} 
-               e^{-A|t|} \rarrow \dfrac{2A}{A^2 + \lambda^2} 
-           \end{equation}
-       \end{lemma}
-       \begin{proof}
-           \[ 
-           \begin{split}
-               \intinf[{e^{-A|t|} \cdot e^{-i\lambda t} \, dt}] &= \int\limits_{-\infty}^0{e^{(A - i\lambda) t} \, dt} + \int\limits_0^{+\infty}{e^{-(A + i\lambda) t} \, dt} = \\
-               &= \left[ e^{(A - i\lambda)t} \cdot \frac{1}{A - i\lambda} \right]_{t = -\infty}^{0} - \left[ e^{-(A + i\lambda)t} \cdot \frac{1}{A + i\lambda} \right]_{t = 0}^{+\infty} = \\
-               &=\frac{1}{A - i\lambda} + \frac{1}{A + i\lambda} = \frac{2A}{A^2 + \lambda^2} 
-           \end{split}
-           \]
-       \end{proof}
-
-       %Fourier 1
-   \clearpage
-       \subsection{Вычисление~аналитического~преобразования~Фурье\\функции~\(f_1(t) = e^{-2|t|} \cos(t)\)}
-
-       Преобразование Фурье \( \mathfrak{F_1} (\lambda)\) функции \(f_1(t) = e^{-2|t|} \cos(t) \) задаётся формулой:
-       \[ \mathfrak{F_1} (\lambda) = \intinf[{e^{-2|t|} \cos(t) e^{-i\lambda t}\, dt}] \]
-       \begin{statement}
-           \begin{equation}\label{eq:fourier:f1} 
-               \boxed{ \mathfrak{F_1}(\lambda) = \dfrac{4(\lambda^2 + 5)}{\lambda^4 + 6\lambda^2 + 25} } 
-           \end{equation}
-       \end{statement}
-       \begin{proof}
-           Заметим, что \(f_1(t) \) представима в виде: 
-           \begin{equation}\label{factor:f1} 
-               f_1(t) = g_1(t) \cdot g_2(t) \text{, где }g_1(t) = e^{-2|t|},\,g_2(t) = \cos(t) 
-           \end{equation}
-           Пользуясь этим соотношением, выражениями для преобразований Фурье \(g_1(t)\) \eqref{fourier:exp_abs} и \(g_2(t)\) \eqref{fourier:cos}, установленным свойством \ref{property:product} и соотношением \eqref{delta:conv} для свёртки с дельта-функцией, получим:
-           \[ 
-           \begin{split}
-               \mathfrak{F_1} (\lambda) &= \dfrac{1}{2\pi} \intinf[{\dfrac{4}{4 + T^2} \cdot \pi(\delta(\lambda - T- 1) + \delta(\lambda + 1 - T))\,dT}] = \\
-               &=\dfrac{2}{4 + (\lambda - 1)^2} + \dfrac{2}{4 + (\lambda + 1)^2} = \dfrac{4(\lambda^2 + 5)}{\lambda^4 + 6\lambda^2 + 25} 
-           \end{split}
-           \]
-       \end{proof}
-       \clearpage
-       %Fourier 2
-
-       \subsection{Вычисление~аналитического~преобразования~Фурье\\функции~\(f_2(t) = \frac{e^{-|t|} - 1}{t} \)}
-       Преобразование Фурье \( \mathfrak{F_2} (\lambda)\) функции \(f_2(t) = \frac{e^{-|t|} - 1}{t} \) задаётся формулой:
-       \[ \mathfrak{F_2} (\lambda) = \intinf[{\dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] \]
-       \begin{statement}
-           \begin{equation}\label{eq:fourier:f2} 
-               \boxed{ \mathfrak{F_2}(\lambda) = i\left(\pi\sgn(\lambda) - 2\arctg(\lambda)\right) } 
-           \end{equation}
-       \end{statement}
-       \begin{proof}
-           Аналогично \eqref{factor:f1} представим \(f_2(t) \) в виде: 
-           \begin{equation}\label{factor:f2} 
-               f_2(t) = g_1(t) \cdot g_2(t) \text{ где } g_1(t) = \left(e^{-|t|} - 1\right)\text{, } g_2(t) = \dfrac{1}{t} 
-           \end{equation}
-           Пользуясь установленными свойствами~\ref{property:linear},~\ref{property:product}, выражениями для преобразований Фурье~\(g_1(t)\) \eqref{fourier:exp_abs},~\eqref{fourier:1} и~\(g_2(t)\)~\eqref{fourier:1/t} и соотношением~\eqref{delta:conv} для свёртки с дельта-функцией, получим:
-           \[ 
-           \begin{split} 
-               f_2(t) \rarrow \mathfrak{F_2} (\lambda) &= \intinf[{ \dfrac{e^{-|t|} - 1}{t} e^{-i\lambda t}\, dt}] = 
-               \dfrac{1}{\pi}\left[\left({\dfrac{1}{1 + (\cdot)^2} - \pi\delta(\cdot)}\right) * \left({-i \pi \sgn(\cdot)}\right)\right] \negmedspace({\lambda}) = \\
-               &= -i\int\limits_{\lambda}^{+\infty}{\dfrac{1}{1 + T^2}\, dT} + i\int\limits_{-\infty}^{\lambda}{\dfrac{1}{1 + T^2}\, dT} + \pi i \sgn(\lambda) = \\
-               &= i\left(\pi \sgn(\lambda) - 2\arctg(\lambda)\right) 
-           \end{split}
-           \]
-       \end{proof}
-       \clearpage
+    Данное выражение корректно при \(B \neq 0\), так как \(\psi(t) \neq 0\) для любого допустимого \(t\), а \(P \neq 0\). \\
+    С учётом того, что множество \(\mathcal{X}_0\) состоит из одной точки (см. \eqref{task:X0}) и первого условия трансверсальности~\eqref{eq:trans:1}, любая "<подозрительная"> на оптимальную траектория \(x^{*}(t)\) выходит из точки \(x_0\), т.е. \(x^{*}(t_0) = x_0\). Тогда, подстановкой в~\eqref{task:system} недостающих значений из~\eqref{eq:control},~\eqref{eq:psi_final} и значения \(x^{*}(t_0) = x_0\) окончательно получим систему:
+    \begin{equation}
+        \label{eq:system_final}
+        \left\{
+        \begin{aligned}
+            & \dot x^{*}(t) = Ax^{*}(t) + u^{*}(t) + f,\:t \in [t_0, +\infty) \\
+            & x^{*}(t_0) = x_0 \\
+            & u^{*}(t) = p + \dfrac{PB^{T}\psi(t)}{\sqrt{\scalar{B^{T}\psi(t)}{PB^{T}\psi(t)}}} \\
+            & \psi(t) = e^{-A^{T}(t - t_0)}\psi_0
+        \end{aligned}
+        \right.
+    \end{equation}
+    \subsection{Оценка погрешности} % (fold)
+    \label{sub:right_trans}
+    Поскольку численное решение задачи сопряжено с погрешностью, требуется ввести некоторую меру погрешности условия трансверсальности на правом конце~\eqref{eq:trans:2}: оно равносильно сонаправленности вектора \(-\psi(t_1)\) и вектора внешней единичной нормали к границе множества \(\mathcal{X}_1\) в точке \(x^{*}(t_1)\).
+    Множество \(\mathcal{X}_1\) представляет собой область, заключённую внутри двух парабол; для удобства, перепишем~\eqref{task:X1} в следующем виде:
+    \[
+        \mathcal{X}_1 = \left\{ x = (x_1, x_2) \in \real^2 \, \colon \dfrac{a}{b}(x_1 - x_{11})^2 - (\dfrac{c}{b} - x_{12})\leqslant x_2 
+        \leqslant x_{12} + \dfrac{c}{b} - \dfrac{a}{b}(x_1 - x_{11})^2 \right\}, \; a, b, c > 0.
+    \]
+    Отсюда явно видно, что эти две параболы пересекаются в точках \(\left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\)\\
+    Уравнение касательной к верхней параболе в точке \(\left(x_1^0, x_2^0\right)\):
+    \begin{align*}
+        & x_2 - x_2^0 = -\dfrac{2a}{b}(x_1^0 - x_{11})(x_1 - x_1^0) \\
+        & \dfrac{2a}{b}(x_1^0 - x_{11})(x_1 - x_1^0) + (x_2 - x_2^0) = 0;
+    \end{align*}
+    Отсюда, вектор нормали \(\vec n_u\) и единичной нормали \(\vec \nu_u\) к верхней параболе в точке \(\left(x_1^0, x_2^0\right)\):
+    \begin{align*}
+        &\vec n_u = \left\{ \dfrac{2a}{b} (x_1^0 - x_{11}), \: 1 \right\} \\
+        &\vec \nu_u = \dfrac{\vec n}{\|n\|}
+    \end{align*}
+    Аналогично, для нижней параболы имеем:
+    \begin{align*}
+        &\vec n_l = \left\{ \dfrac{2a}{b} (x_1^0 - x_{11}), \: -1 \right\} \\
+        &\vec \nu_l = \dfrac{\vec n}{\|n\|}
+    \end{align*}
+    Отметим, что в точках пересечения парабол \(\left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\) граница множества \(\mathcal{X}_1\) не является гладкой, следовательно существует целый сектор направлений, по которым выполняется условие~\eqref{eq:trans:2}.
     % section code (end)
     \begin{thebibliography}{0}
         \addcontentsline{toc}{section}{Список литературы}
