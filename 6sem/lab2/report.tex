@@ -1,0 +1,373 @@
+\documentclass[11pt, oneside, final]{article} 
+\usepackage[utf8]{inputenc} 
+\usepackage{a4wide} 
+\usepackage[russian]{babel} 
+\usepackage{graphicx} 
+\usepackage{epstopdf} 
+\usepackage{amsmath} 
+\usepackage{amsfonts} 
+\usepackage{amssymb} 
+\usepackage{amsthm}
+\usepackage{epstopdf}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[perpage]{footmisc}
+%\newtheoremstyle{mytheorem}% name of the style to be used
+%  {}% measure of space to leave above the theorem. E.g.: 3pt
+%  {}% measure of space to leave below the theorem. E.g.: 3pt
+%  {}% name of font to use in the body of the theorem
+%  {}% measure of space to indent
+%  {}% name of head font
+%  {:}% punctuation between head and body
+%  { }% space after theorem head; " " = normal interword spacewww
+%  {}% Manually specify head
+%\theoremstyle{mytheorem}
+\newtheoremstyle{break}%
+  {}{}%
+  {\itshape}{}%
+  {\bfseries}{}%  % Note that final punctuation is omitted.
+  {\newline}{}
+\theoremstyle{break}
+\newtheorem*{PMP}{Принцип Максимума Понтрягина} 
+\numberwithin{equation}{section} 
+\theoremstyle{plain}
+\newtheorem{theorem}{Теорема}[section] 
+\newtheorem{property}{Свойство}[section] 
+\newtheorem{corollary}{Следствие}[theorem] 
+\newtheorem*{corollary*}{Следствие}
+\newtheorem{lemma}[theorem]{Лемма} 
+\newtheorem*{statement}{Утверждение} 
+\theoremstyle{definition}
+\newtheorem{definition}{Определение}[section] 
+\renewenvironment{proof}{
+\noindent\textit{Доказательство: }} {\qed}
+\newcounter{icount}
+\graphicspath{{figures/}}
+%commands
+\newcommand \bitem[1][]{
+\item \textbf{#1}} 
+\newcommand \four[1][\lambda]{\mathfrak{F}(#1)} 
+\newcommand \fft[1][\lambda]{F(#1)} 
+\newcommand \rarrow{\rightarrow} 
+\newcommand \real{\mathbb{R}}
+\newcommand \intinf[1][{\,dt}]{ \int\limits_{-\infty}^{+\infty}{{#1}}} 
+\renewcommand \qed{$\blacksquare$}
+\newcommand{\scalar}[2]{\langle #1, #2\,\rangle}
+
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\bigO}{O}
+
+\begin{document}
+
+%Title
+    \thispagestyle{empty}
+    \begin{center}
+        \ \vspace{-3cm}
+    
+        \includegraphics[width=0.5
+        \textwidth]{msu}\\
+        {\scshape Московский государственный университет имени М.~В.~Ломоносова}\\
+        Факультет вычислительной математики и кибернетики\\
+        Кафедра системного анализа
+    
+        \vfill
+    
+        {\LARGE Отчёт по практикуму}
+    
+        \vspace{1cm}
+    
+        {\Huge\bfseries "<Задача оптимального управления ракетой">} 
+    \end{center}
+
+    \vspace{3cm}
+    \begin{flushright}
+        \large \textit{Студент 315 группы}\\
+        В.\,А.~Сливинский
+    
+        \vspace{5mm}
+    
+        \textit{Руководитель практикума}\\
+        к.ф.-м.н., доцент П.\,А.~Точилин 
+    \end{flushright}
+
+    \vfill
+    \begin{center}
+        Москва, 2018 
+    \end{center}
+    \pagebreak
+
+    %Contents
+    \tableofcontents
+
+    \pagebreak
+
+
+    %Task
+
+    \section{Постановка~задачи}
+    \label{sec:task}
+    \subsection{Исходная постановка}
+    \label{sub:given}
+    Движение ракеты в вертикальной плоскости над поверхностью Земли описывается следующими дифференциальными уравнениями: 
+    \begin{equation}
+        \label{task:system}
+        \left\{
+        \begin{aligned}
+            &\dot mv + m \dot v = -gm - kv^2 + lu \\
+            &\dot m = -u 
+        \end{aligned}
+        \right.
+    \end{equation}
+    Здесь, \(v \in \mathbb{R} \)~--- скорость ракеты, \(m\)~--- её переменная масса, \(g\)~--- гравитационная постоянная, \(k \geqslant 0\)~--- коэффициент трения, \(l > 0\)~--- коэффициент, определяющий силу, действующую на ракету со стороны сгорающего топлива, \(u \in \left[u_{min},\,u_{max}\right]\)~--- скорость подачи топлива в сопла (\(0 \leqslant u_{min} \leqslant u_{max}\)). Кроме того, известна масса ракеты без топлива \(M > 0\). \\
+    \textbf{Задача 1:} Задан начальный момент времени \(t_0 = 0\), начальная скорость \(v(0) = 0\), начальная масса ракеты с топливом \(m(0) = m_0 > M\). Необходимо, за счёт выбора программного управления \(u(t)\) перевести ракету на наибольшую высоту в заданный момент времени \(T > 0\).\\
+    \textbf{Задача 2:} Задан начальный момент времени \(t_0 = 0\), начальная скорость \(v(0) = 0\), начальная масса ракеты с топливом \(m(0) = m_0 > M\). Необходимо, за счёт выбора программного управления \(u(t)\) перевести ракету на заданную высоту \(H > 0\) в заданный момент времени \(T > 0\) так, чтобы минимизировать значение функционала 
+    \begin{equation*}
+        \mathcal{J}_2 = \int_0^T{u^2(t)\,dt}
+    \end{equation*}
+    В обеих задачах в начальный момент времени ракета стоит на поверхности Земли и не может двигаться вниз. Кроме того, масса ракеты с топливом \(m\) не может превышать массу ракеты без топлива \(M\); если топливо заканчивается~--- двигатель отключается, т.е. \(\dot m = 0\). 
+    
+    Требуется: 
+    \begin{enumerate} 
+        \item Написать в среде Matlab программу с пользовательским интерфейсом, которая по заданным значениям параметров \(T,\,M,\,m_0,\,u_{min},\,u_{max},\,l,\,k,\,g,\,H\) определяет, разрешима ли задача \eqref{task:system}. Если задача разрешима, программа должна построить графики компонент оптимального управления, оптимальной траектории, сопряжённых переменных. Кроме того, программа должна определить количество переключений найденного оптимального управления и соответствующие моменты переключений.
+        \item Привести все необходимые теоретические выкладки, а также примеры оптимальных управлений и траекторий для всех качественно различных режимов оптимального управления.
+    \end{enumerate}
+    \pagebreak
+    \subsection{Переформулировка задачи}
+    \label{sub:new}
+    Прежде всего, учтём приведённые в условии замечания:
+    \begin{equation}
+        \dot m(t) = \begin{cases} 0& \text{если $m(t) = M$} \\ 
+                                 -u& \text{иначе}
+                     \end{cases}
+    \end{equation}
+    Здесь \(u \in [u_{min}, u_{max}]\), \(t \in [t_0, T]\).
+    Для удобства, обозначим \(\mathcal{U} = [u_{min}, u_{max}] \).
+    Высоту ракеты в обеих задачах будем обозначать буквой \(h\).
+    Кроме того, для первой задачи рассмотрим следующий функционал:
+    \[
+        \mathcal{J}_1 = -h(T)
+    \]
+    Теперь, задачи можно переформулировать в следующем виде: \\
+    \textbf{Задача 1:}
+    \begin{equation}
+        \label{eq:task1}
+        \left\{
+        \begin{aligned}
+            &\dot mv + m \dot v = -gm - kv^2 + lu \\
+            &\dot m(t) = \begin{cases} 0& \text{если $m(t) = M$} \\ 
+                                 -u& \text{иначе}
+                     \end{cases} \\
+            &\dot h = v\\
+            &v(0) = 0 \\
+            &m(0) = m_0 > M \\
+            &h(0) = 0 \\
+            &\dot v(0) \geqslant 0 \\
+            &\mathcal{J}_1 = -h(T) = - \int_0^T{v(t) \, dt} \rightarrow \inf_{\substack{u \in \mathcal{U}}}
+        \end{aligned}
+        \right.
+        \text{ где }u \in \mathcal{U},\quad t \in [0, T]
+    \end{equation}
+    \textbf{Задача 2:}
+    \begin{equation}
+        \label{eq:task2}
+        \left\{
+        \begin{aligned}
+            &\dot mv + m \dot v = -gm - kv^2 + lu \\
+            &\dot m(t) = \begin{cases} 0& \text{если $m(t) = M$} \\ 
+                                 -u& \text{иначе}
+                     \end{cases} \\
+            &\dot h = v\\
+            &v(0) = 0 \\
+            &m(0) = m_0 > M \\
+            &h(0) = 0 \\
+            &h(T) = H \\
+            &\dot v(0) \geqslant 0 \\
+            &\mathcal{J}_2 = \int_0^T{u^2(t)\,dt} \rightarrow \inf_{\substack{u \in \mathcal{U}}}
+        \end{aligned}
+        \right.
+        \text{ где }u \in \mathcal{U},\quad t \in [0, T]
+    \end{equation}
+    Теперь, переформулировав задачи в более широком и понятном виде, приступим последовательно к их решению.
+    \section{Аналитическое~решение~задачи~1}
+    \label{sec:task1}
+    \subsection{Случай "<достаточного"> количества топлива}
+    Предположим, что \(m_0 - u_{max} \cdot T \geqslant M\), то есть топлива в баке ракеты достаточно для того, чтобы на протяжении всего времени \(T\) выбрасывать его с максимальной скоростью.
+    \begin{statement} 
+        \label{st:enough}
+        Если в задаче \eqref{eq:task1} \(m_0 - u_{max} \cdot T \geqslant M\), то \(u^*(t) = u_{max}\; \dot \forall t \in [0, T] \)~--- оптимальное управление.
+    \end{statement}
+    \begin{proof}
+        Предположим противное: пусть \(u^*(t)\)~--- оптимальное управление и существует 
+        \(t_1, t_2 \in [0, T]\) такие, что \(t_1 < t_2 \text{ и } u^*(\tilde t) < u_{max} \;\forall \tilde t \in [t_1, t_2]\). В силу предположения теоремы и второго уравнения из \eqref{eq:task1}, \(\dot m(t) = -u(t) \: \forall t \in [0, T]\) и, следовательно, \(m(t) = m_0 - \int_0^t{u^*(\tau)\,d\tau}\). Тогда для высоты получим следующее выражение:
+        \[
+         h(t) = \int_0^t{v(\tau)\, d\tau} \text{, но, в силу \eqref{eq:task1}, } \dot mv + m \dot v = -gm - kv^2 + lu
+        \]
+        Отсюда, выполняя соответствующие подстановки, получаем:
+        \[
+        \dot v = -g - \dfrac{1}{m_0 - \int_0^t{u^*(\tau)\,d\tau}} \cdot \left((l+v)u^* - kv^2\right) = \dfrac{1}{\int_0^t{u^*(\tau)\,d\tau} - m_0} \cdot \left((l+v)u^* - kv^2\right) - g
+        \]
+        До момента времени \(t_1\) скорости и массы для управлений \(u^*\) и \(u = u_{max}\) изменяются одинаково. Не ограничивая общности суждений, положим \(v(t_1) = 0,\:m(t_1) = m_1 > M, \: t_1 = 0\). Тогда при \(t_1 < \tau \leqslant t_2\) имеем:
+        \begin{gather}
+        \dot v(t_1) = \dfrac{lu^*(t_1)}{m_1}  - g \\
+        \label{eq:velocity:taylor}
+        v(\tau) = v(t_1) + \dot v(t_1) \cdot (\tau - t_1) + \bigO((\tau - t_0)^2) = ( \dfrac{lu^*(t_1)}{m_1}  - g) \cdot \tau + \bigO(\tau^2)
+        \end{gather}
+    Выражение \eqref{eq:velocity:taylor} представляет собой разложение в ряд Тейлора с центром в точке \(t_1\). Аналогичным образом, разложим в ряд Тейлора скорость \(v_{max}\), отвечающую управлению \(u = u_{max} \):
+    \begin{gather}
+        \dot v_{max}(t_1) = \dfrac{lu_{max}}{m_1}  - g \\
+        \label{eq:vmax:taylor}
+        v_{max}(\tau) = v_{max}(t_1) + \dot v(t_1) \cdot (\tau - t_1) + \bigO((\tau - t_0)^2) = ( \dfrac{lu_{max}}{m_1}  - g) \cdot \tau + \bigO(\tau^2)
+    \end{gather}
+    Теперь, вычтем из \eqref{eq:velocity:taylor} \eqref{eq:vmax:taylor}:
+    \begin{equation*}
+        v(\tau) - v_{max}(\tau) = \dfrac{l(u^*(\tau) - u_{max})}{m_1} \cdot \tau + \bigO(\tau^2)
+    \end{equation*}
+    По предположению, \(u^*(\tilde t) < u_{max} \;\forall \tilde t \in [t_1, t_2]\), стало быть, \(\dfrac{l(u^*(\tau) - u_{max})}{m_1} < 0\), тогда, при достаточно малом \(0 < \tau < 1\): 
+    \begin{equation}
+        \dfrac{v(\tau) - v_{max}(\tau)}{\tau} < 0
+    \end{equation}
+    Отсюда, так как \(\tau > 0\) получаем, что \(v(\tau) - v_{max}(\tau) < 0\). \\
+    Повторяя аналогичные рассуждения для всего отрезка \([t_1, t_2]\), получим, что всюду внутри отрезка \(v(\tau) < v_{max}\), что противоречит предположению об оптимальности управления \(u^*(t)\). Полученное противоречие доказывает утверждение.
+    \end{proof}
+    \begin{corollary*}
+        Если в задаче \eqref{eq:task1} \(m_0 - u_{max} \cdot T \geqslant M\), то \(u^*(t) = u_{max}\; \forall t \in [0, T] \)~--- оптимальное управление.
+    \end{corollary*}
+    \begin{proof}
+        Заметим, что если оптимальное управление отличается от \(u^* = u_{max}\) на множестве меры ноль, то это никоим образом не повлияет на значение функционала \(\mathcal{J}_1 = - \int_0^T{v(t) \, dt} \)
+    \end{proof}
+    \subsection{Случай "<ограниченного"> количества топлива}
+    Рассмотрим теперь второй качественный случай, когда \(m_0 - u_{max} \cdot T < M\), то есть топлива в баке ракеты недостаточно для того, чтобы на протяжении всего времени \(T\) выбрасывать его с максимальной скоростью.
+    \subsection{Принцип максимума} % (fold)
+    \label{sub:maximum}
+    Прежде всего, установим принцип максимума Понтрягина в следующей формулировке:\footnote{Доказательство приведено, например, в \cite{Pontr'yaginEtAl:maximum}}
+    \begin{PMP}[В формулировке из \cite{RoublevTochilin:matlab}]
+        \label{th:max}
+        Пусть \((u^{*}(\cdot), x^{*}(\cdot))\)~--- оптимальная пара. \\ Тогда существует \(\psi(t) \in AC[t_0, t_1], \psi(t) \neq 0 \ \forall t \in [t_0, t_1]\!: \)
+        \begin{align}
+            \dot \psi =& -\!A^{T}\psi \label{eq:conj} \\
+            \scalar{Bu^{*}(t)}{\psi(t)} =& \, \rho(\psi(t)|B\mathcal{P}) \label{eq:optimum} \\ 
+            \scalar{\psi(t_0)}{x^{*}(t_0)} =& \, \rho(\psi(t_0)|\mathcal{X}_0) \label{eq:trans:1} \\
+            \scalar{-\psi(t_1)}{x^{*}(t_1)} =& \, \rho(-\psi(t_1)|\mathcal{X}_1) \label{eq:trans:2}            
+        \end{align}
+    \end{PMP}
+    \noindent Систему \eqref{eq:conj} называют \emph{сопряжённой системой}, её решение \(\psi = \psi(t)\)~--- \emph{сопряжёнными переменными}, а условия \eqref{eq:trans:1} и \eqref{eq:trans:2}~--- \emph{условиями трансверсальности}. Условие \eqref{eq:optimum} позволяет выделить из всех возможных управлений семейство "<подозрительных">  на оптимальные. \\
+    \subsection{Исследование сопряжённой системы} % (fold)
+    \label{sub:conjugate}
+    Для того, чтобы однозначно определить решение системы \eqref{eq:conj}, нам необходимо присовокупить к ней некоторые начальные условия. Мы, для удобства решения, будем рассматривать \(\psi(t_0) = \psi_0\). В результате получим задачу Коши
+    для сопряжённой системы:
+    \begin{equation}
+        \left\{
+        \label{eq:cauchy}
+        \begin{aligned}
+            & \dot \psi(t) = -\!A^{T}\psi(t), \ t \in [t_0, t_1] \\
+            & \psi(t_0) = \psi_0 
+        \end{aligned}
+        \right.
+    \end{equation} 
+    Тогда, решение этой системы представимо в виде:
+    \begin{equation}
+        \label{eq:psi_final}
+        \psi(t) = e^{-A^{T}(t - t_0)}\psi_0
+    \end{equation}
+    \subsection{Выделение управлений и траекторий, "<подозрительных"> на оптимальные} % (fold)
+    \label{sub:pseudo_optimum}
+    Условие \eqref{eq:optimum}, в силу свойств скалярного произведения, можно переписать в следующем виде:
+    \begin{equation*}
+        \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \rho(B^{T}\psi(t)|\mathcal{P}) \label{eq:optimum2}  
+    \end{equation*}
+    В свою очередь, раскрыв определение опорной функции множества \(\mathcal{P}\) в направлении \(B^{T}\psi(t)\), окончательно получим:
+    \begin{equation}
+        \label{eq:optimum:final}
+        \scalar{B^{T}\psi(t)}{u^{*}(t)} = \, \sup_{u(t)\in\mathcal{P}}\scalar{B^{T}\psi(t)}{u(t)}
+    \end{equation}
+    Заметим, что множество \(\mathcal{P}\) (см. \eqref{task:P}) есть эллипсоид \( \mathcal{E}(p, P)\), где \(P = 
+    \left(\begin{smallmatrix} \frac{r}{9} & 0 \\ 0 & \frac{r}{4} \end{smallmatrix}\right)\)~--- матрица конфигурации.
+    Учтём также, что \(B = E\); из \cite{Roublev:optimal:linear} известно, что решение \(u^{*}(t)\) уравнения~\eqref{eq:optimum:final} представимо в виде:
+    \begin{equation}
+    \label{eq:control}
+        u^{*}(t) = p + \dfrac{P\psi(t)}{\sqrt{\scalar{\psi(t)}{P\psi(t)}}}
+    \end{equation}
+    Данное выражение корректно, так как \(\psi(t) \neq 0\) для любого допустимого \(t\), а \(P \neq 0\). Кроме того, оно показывает, что для каждого \(\psi_0\) существует единственное "<подозрительное"> на оптимальное управление. \\
+    С учётом того, что множество \(\mathcal{X}_0\) состоит из одной точки (см. \eqref{task:X0}) и первого условия трансверсальности~\eqref{eq:trans:1}, любая "<подозрительная"> на оптимальную траектория \(x^{*}(t)\) выходит из точки \(x_0\), т.е. \(x^{*}(t_0) = x_0\). Тогда, подстановкой в~\eqref{task:system} недостающих значений из~\eqref{eq:control},~\eqref{eq:psi_final} и значения \(x^{*}(t_0) = x_0\) окончательно получим систему:
+    \begin{equation}
+        \label{eq:system_final}
+        \left\{
+        \begin{aligned}
+            & \dot x^{*}(t) = Ax^{*}(t) + u^{*}(t) + f,\:t \in [t_0, +\infty) \\
+            & x^{*}(t_0) = x_0 \\
+            & u^{*}(t) = p + \dfrac{P\psi(t)}{\sqrt{\scalar{\psi(t)}{P\psi(t)}}} \\
+            & \psi(t) = e^{-A^{T}(t - t_0)}\psi_0
+        \end{aligned}
+        \right.
+    \end{equation}
+    Решение данной системы \(x^{*}(t)\) есть траектория, "<подозрительная"> на оптимальную, соответствующая управлению \(u^{*}(t)\) из \eqref{eq:control}. Заметим, что и это управление \(u^{*}(t)\), и соответствующая ему траектория \(x^{*}(t)\) однозначно определяются (при фиксированных параметрах из \ref{sub:general}) лишь значением \(\psi(t_0) = \psi_0\).
+    \subsection{Оценка погрешности} % (fold)
+    \label{sub:right_trans}
+    Поскольку численное решение задачи сопряжено с погрешностью, требуется ввести некоторую меру погрешности условия трансверсальности на правом конце~\eqref{eq:trans:2}: оно равносильно сонаправленности вектора \(-\psi(t_1)\) и вектора внешней единичной нормали к границе множества \(\mathcal{X}_1\) в точке \(x^{*}(t_1)\).
+    Множество \(\mathcal{X}_1\) представляет собой область, заключённую внутри двух парабол; для удобства, перепишем~\eqref{task:X1} в следующем виде:
+    \[
+        \mathcal{X}_1 = \left\{ x = (x_1, x_2) \in \real^2 \, \colon \dfrac{a}{b}(x_1 - x_{11})^2 - (\dfrac{c}{b} - x_{12})\leqslant x_2 
+        \leqslant x_{12} + \dfrac{c}{b} - \dfrac{a}{b}(x_1 - x_{11})^2 \right\}, \; a, b, c > 0.
+    \]
+    Отсюда явно видно, что эти две параболы пересекаются в точках \(\left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\)\\
+    Уравнение касательной к верхней параболе в точке \(\left(x_1^0, x_2^0\right)\)\footnote{Здесь и далее, по понятным причинам, предполагаем, что точка \(\left(x_1^0, x_2^0\right)\) принадлежит границе множества \(\mathcal{X}_1\)}:
+    \begin{align*}
+        & x_2 - x_2^0 = -\dfrac{2a}{b}(x_1^0 - x_{11})(x_1 - x_1^0) \\
+        & \dfrac{2a}{b}(x_1^0 - x_{11})(x_1 - x_1^0) + (x_2 - x_2^0) = 0;
+    \end{align*}
+    Отсюда, вектор нормали \(\vec n_u\) и единичной нормали \(\vec \nu_u\) к верхней параболе в точке \(\left(x_1^0, x_2^0\right)\):
+    \begin{align*}
+        &\vec n_u = \left( \dfrac{2a}{b} (x_1^0 - x_{11}), \: 1 \right) \\
+        &\vec \nu_u = \dfrac{\vec n}{\|n\|}
+    \end{align*}
+    Аналогично, для нижней параболы имеем:
+    \begin{align*}
+        &\vec n_l = \left( \dfrac{2a}{b} (x_1^0 - x_{11}), \: -1 \right) \\
+        &\vec \nu_l = \dfrac{\vec n}{\|n\|}
+    \end{align*}
+    Таким образом, запишем общую формулу для внешней нормали к границе множества \(\mathcal{X}_1\) в точке \(\left(x_1^0, x_2^0\right)\), при условии, что \(\left(x_1^0, x_2^0\right) \neq \left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\):
+    \begin{equation}
+        \label{eq:normal}
+        \vec n =
+        \begin{cases}
+            \left( \dfrac{2a}{b} (x_1^0 - x_{11}), \: 1 \right)& \text{если } x_2^0 > x_{12} \\
+            \left( \dfrac{2a}{b} (x_1^0 - x_{11}), \: -1 \right)& \text{если } x_2^0 < x_{12}
+        \end{cases}
+    \end{equation}
+    Отметим, что в точках пересечения парабол \(\left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\) граница множества \(\mathcal{X}_1\) не является гладкой, следовательно, существует целый сектор направлений, по которым выполняется условие~\eqref{eq:trans:2}. \\
+    В качестве меры погрешности в случае, если \(x^{*}(t_1) = \left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\) возьмём модуль синуса угла между \(-\psi(t_1) \) и вектором внешней нормали к границе \eqref{eq:normal}, а если \(x^{*}(t_1) = \left(x_{11} \pm \sqrt{\frac{c}{a}}, \: x_{12} \right)\)\footnote{При решении в числах, это равенство равносильно тому, что точка \(x^{*}(t_1)\) лежит в некоторой достаточно малой окрестности точки пересечения парабол}~--- модуль синуса угла отклонения от соответстующего сектора "<нормалей"> (или 0, если \(-\psi(t_1)\) лежит в этом секторе). Для нахождения модуля синуса угла между векторами воспользуемся основным тригонометрическим тождеством, и тем фактом, что для векторов \(- \vec\psi(t_1) \text{ и } \vec n  \) косинус угла \(\varphi\) между ними равен: 
+    \[\cos\varphi = \dfrac{\scalar{- \vec\psi(t_1)}{\vec n}}{\|-\psi(t_1)\| \|n\|}, \]
+    откуда 
+    \[\sin\varphi = \sqrt{1 - \left(\dfrac{\scalar{- \vec\psi(t_1)}{\vec n}}{\|-\psi(t_1)\| \|n\|}\right)^2}.\]
+    \pagebreak
+    \section{Описание~численного~метода} % (fold)
+    \label{sec:method}
+    \begin{enumerate}
+        \item Задаём все параметры системы (загрузкой или вводом с клавиатуры), длину временного интервала \(T\), инициализируем конфигурационную матрицу эллипса \(\mathcal{P}\), соответствующие функции для множества \(\mathcal{X}_1\), функцию попадания во множество \(\mathcal{X}_1\);
+        \item Проверяем, не находится ли точка \(x_0\) во множестве \(\mathcal{X}_1\) изначально;
+        \item Для решения сопряжённой системы используется функция \texttt{solveConj} со следующей спецификацией: 
+        \begin{verbatim}
+function [ tMaj, tRet, xMaj, psi0Maj, alphaMaj, xSusp ] = solveConj( tMaj, ...
+A, f, p, P, x0, t0, T, alphaSpace, opts )
+        \end{verbatim} 
+        \item В отдельной функции \texttt{solveConj} на единичной сфере перебираем всевозможные значения \(\psi_0 = \left( \sin(\alpha),\:\cos(\alpha)\right)^T\), рассматривая \(\alpha\) на сетке \texttt{alphaSpace}. Для каждого значения \(\psi_0\) решаем сопряженную систему при помощи функции \texttt{ode45}, реализующей метод Рунге-Кутты четвёртого порядка с параметром \texttt{events}, соответствующим функции попадания во множество \(\mathcal{X}_1\);
+        \item В случае попадания во множество \(\mathcal{X}_1\) за отведённое время, фиксируем данное время как оптимальное, если оно меньше предыдущего минимума (в начале алгоритма полагаем это время равным переданному в \texttt{solveConj} значению параметра \texttt{tMaj}, при первом запуске~--- \(+\infty\)), сохраняем соответствующие этому времени значения \(\psi_0,\:x^*(t), \: \alpha^*\);
+        \item Таким образом, функция \texttt{solveConj} либо возвращает в качестве оптимального времени \(+\infty\), что соответствует случаю отсутствия решения (на данной сетке), либо возвращает набор, состоящий из оптимального времени \(t^*\), оптимальной траектории \(x^*(t)\), оптимального начального условия для сопряжённой системы \(\psi_0\) и соответствующего ему угла \(\alpha^*\), а также коллекцию тестовых ("<подозрительных">) траекторий \texttt{xSusp}; по этим данным однозначно восстанавливается оптимальное управление \(u^*(t)\) и значение сопряжённых переменных \(\psi(t_1)\);
+        \item Ошибка второго условия трансверсальности рассчитывается согласно пункту~\ref{sub:right_trans} в функции \texttt{calcError};
+        \item Производится построение графиков согласно требованиям;
+        \item При необходимости, повторно вызвав функцию \texttt{solveConj} c параметром \texttt{tMaj} равным оптимальному времени \(t^*\), полученному на предыдущем шаге, можно осуществить локальное или глобальное улучшение решения. Для локального улучшения подаём на вход функции (параметр \texttt{alphaSpace}) разбиение некоторой окрестности \(\alpha^*\), а для глобального ~--- сетку большего размера
+    \end{enumerate}
+    \pagebreak
+    % section method (end)
+    \begin{thebibliography}{0}
+        \addcontentsline{toc}{section}{Список литературы}
+        \bibitem{Roublev:optimal:linear} И. В.~Рублёв. \emph{Лекционный курс Оптимальное Управление (Линейные Системы)},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        2017
+        \bibitem{RoublevTochilin:matlab} Точилин~П.~А. \emph{Лекционный курс Программирование на языке \texttt{MATLAB}},
+        кафедра Системного~Анализа, Факультет Вычислительной Математики и Кибернетики, МГУ~им.~М.~В.~Ломоносова, 
+        2017~-- 2018
+        \bibitem{Pontr'yaginEtAl:maximum} Понтрягин Л. С., Болтянский В. Г., Гамкрелидзе Р. В., Мищенко Е. Ф.~\emph{Математическая~теория~оптимальных~процессов}, — М.: Наука, 1976.
+        \bibitem{Matlab:help} Справочные средства языка \texttt{MATLAB}
+    \end{thebibliography}
+\end{document}
