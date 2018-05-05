@@ -1,0 +1,95 @@
+\documentclass[11pt, oneside, final]{article} 
+\usepackage[utf8]{inputenc} 
+\usepackage{a4wide} 
+\usepackage[russian]{babel} 
+\usepackage{graphicx} 
+\usepackage{epstopdf} 
+\usepackage{amsmath} 
+\usepackage{amsfonts} 
+\usepackage{amssymb} 
+\usepackage{amsthm}
+\usepackage{epstopdf}
+\usepackage[perpage]{footmisc}
+%\newtheoremstyle{mytheorem}% name of the style to be used
+%  {}% measure of space to leave above the theorem. E.g.: 3pt
+%  {}% measure of space to leave below the theorem. E.g.: 3pt
+%  {}% name of font to use in the body of the theorem
+%  {}% measure of space to indent
+%  {}% name of head font
+%  {:}% punctuation between head and body
+%  { }% space after theorem head; " " = normal interword spacewww
+%  {}% Manually specify head
+%\theoremstyle{mytheorem}
+\numberwithin{equation}{section} 
+\newtheorem{definition}{Определение}[section] 
+\newtheorem{theorem}{Теорема}[section] 
+\newtheorem{property}{Свойство}[section] 
+\newtheorem{corollary}{Следствие}[theorem] 
+\newtheorem{lemma}[theorem]{Лемма} 
+\newtheorem*{statement}{Утверждение} 
+\renewenvironment{proof}{
+\noindent\textit{Доказательство: }} {\qed}
+\newcounter{icount}
+\graphicspath{figures/}
+%commands
+\newcommand \bitem[1][]{
+\item \textbf{#1}} 
+\newcommand \four[1][\lambda]{\mathfrak{F}(#1)} 
+\newcommand \fft[1][\lambda]{F(#1)} 
+\newcommand \rarrow{\rightarrow} 
+\newcommand \intinf[1][{\,dt}]{ \int\limits_{-\infty}^{+\infty}{{#1}}} 
+\renewcommand \qed{$\blacksquare$}
+
+\DeclareMathOperator{\sgn}{sgn}
+%rotating integral
+\newcommand{\bigrint}{\hbox to 0.8em{\hss\scalebox{1.2}[1]
+    {\rotatebox[origin=c]{17}{$\displaystyle\int$}}\hss}}
+\newcommand{\rint}{\mathop{\bigrint}\displaylimits}
+
+\begin{document}
+
+%Title
+    \thispagestyle{empty}
+    \begin{center}
+        \ \vspace{-3cm}
+    
+        \includegraphics[width=0.5
+        \textwidth]{msu}\\
+        {\scshape Московский государственный университет имени М.~В.~Ломоносова}\\
+        Факультет вычислительной математики и кибернетики\\
+        Кафедра системного анализа
+    
+        \vfill
+    
+        {\LARGE Курсовая работа}
+    
+        \vspace{1cm}
+    
+        {\Huge\bfseries "<Динамические системы и модели биологии">} 
+    \end{center}
+
+    \vspace{1cm}
+    \begin{flushright}
+        \large \textit{Студент 315 группы}\\
+        В.\,А.~Сливинский
+    
+        \vspace{5mm}
+    
+        \textit{Научный руководитель}\\
+        д.ф.-м.н., профессор А.\,С.~Братусь
+    \end{flushright}
+
+    \vfill
+    \begin{center}
+        Москва, 2018 
+    \end{center}
+    \pagebreak
+
+    %Contents
+    \tableofcontents
+
+    \pagebreak
+    \input ./1.tex
+    \input ./2.tex
+    \input ./biblio.tex
+\end{document}

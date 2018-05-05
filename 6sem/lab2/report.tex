@@ -145,7 +145,7 @@
     Высоту ракеты в обеих задачах будем обозначать буквой \(h\).
     Кроме того, для первой задачи рассмотрим следующий функционал:
     \[
-        \mathcal{J}_1 = -h(T)
+        \mathcal{J}_1 = h(T)
     \]
     Теперь, задачи можно переформулировать в следующем виде: \\
     \textbf{Задача 1:}
@@ -162,11 +162,12 @@
             &m(0) = m_0 > M \\
             &h(0) = 0 \\
             &\dot v(0) \geqslant 0 \\
-            &\mathcal{J}_1 = -h(T) = - \int_0^T{v(t) \, dt} \rightarrow \inf_{\substack{u \in \mathcal{U}}}
+            &\mathcal{J}_1 = h(T) = \int_0^T{v(t) \, dt} \rightarrow \sup_{\substack{u \in \mathcal{U}}}
         \end{aligned}
         \right.
         \text{ где }u \in \mathcal{U},\quad t \in [0, T]
     \end{equation}
+    \\
     \textbf{Задача 2:}
     \begin{equation}
         \label{eq:task2}
@@ -187,47 +188,80 @@
         \right.
         \text{ где }u \in \mathcal{U},\quad t \in [0, T]
     \end{equation}
-    Теперь, переформулировав задачи в более широком и понятном виде, приступим последовательно к их решению.
+    Дополнительно можно провести следующую параметризацию задач, приводящую уравнения к более понятному виду:
+    \begin{equation}
+    \label{eq:newvar}
+    \left\{
+    \begin{aligned}
+        &x_1 = v + l \\
+        &x_2 = \dfrac{1}{m}
+    \end{aligned}
+    \right.
+    \end{equation}
+    Перепишем \eqref{eq:task1} и \eqref{eq:task2} в терминах новых переменных \eqref{eq:newvar}:\\
+    \textbf{Задача 1:}
+    \begin{equation}
+        \label{eq:task1_final}
+        \left\{
+        \begin{aligned}
+            &\dot x_1 = -g + x_2 \cdot \left(-kx_1^2 + 2kx_1l - kl^2 + ux_1\right) \\
+            &\dot x_2(t) = \begin{cases} 0& \text{если $x_2(t) = \dfrac{1}{M}$} \\ 
+                                 x_2^2u& \text{иначе}
+                     \end{cases} \\
+            &\dot h = x_1 - l\\
+            &x_1(0) = l \\
+            &x_2(0)= \dfrac{1}{m_0} < \dfrac{1}{M} \\
+            &h(0) = 0 \\
+            &\dot x_1(0) \geqslant 0 \\
+            &\mathcal{J}_1 = h(T) = \int_0^T{x_1(t) - l \, dt} \rightarrow \sup_{\substack{u \in \mathcal{U}}}
+        \end{aligned}
+        \right.
+        \text{ где }u \in \mathcal{U},\quad t \in [0, T]
+    \end{equation}
+    \\
+    \textbf{Задача 2:}
+    \begin{equation}
+        \label{eq:task2_final}
+        \left\{
+        \begin{aligned}
+           &\dot x_1 = -g + x_2 \cdot \left(-kx_1^2 + 2kx_1l - kl^2 + ux_1\right) \\
+           &\dot x_2(t) = \begin{cases} 0& \text{если $x_2(t) = \dfrac{1}{M}$} \\ 
+                                x_2^2u& \text{иначе}
+                    \end{cases} \\
+            &\dot h = x_1 - l\\
+            &x_1(0) = l \\
+            &x_2(0)= \dfrac{1}{m_0} < \dfrac{1}{M} \\
+            &h(0) = 0 \\
+            &h(T) = H \\
+            &\dot x_1(0) \geqslant 0 \\
+            &\mathcal{J}_2 = \int_0^T{u^2(t)\,dt} \rightarrow \inf_{\substack{u \in \mathcal{U}}}
+        \end{aligned}
+        \right.
+        \text{ где }u \in \mathcal{U},\quad t \in [0, T]
+    \end{equation}
+    Теперь, переформулировав задачи в наиболее широком и понятном виде, приступим последовательно к их решению.
+    \section{Общие аналитические выводы}
+    В первую очередь отметим, что следующее условие является необходимым условием разрешимости обеих задач:
+    \begin{equation}
+        \label{eq:start_cond:1}
+        \dot v(0) > 0 \Leftrightarrow lu_{min} > gm_0
+    \end{equation}
+    В самом деле, если условие \eqref{eq:start_cond:1} не выполняется, то скорость ракеты \(v(0) \equiv 0\) всюду на отрезке \([t_0, T]\), а, стало быть, ракета не поднимется с поверхности Земли. Для задачи 1 это равносильно произвольности управления (ведь максимальная высота всё-равно равна нулю), а для второй задачи~--- неразрешимости задачи
     \section{Аналитическое~решение~задачи~1}
     \label{sec:task1}
     \subsection{Случай "<достаточного"> количества топлива}
     Предположим, что \(m_0 - u_{max} \cdot T \geqslant M\), то есть топлива в баке ракеты достаточно для того, чтобы на протяжении всего времени \(T\) выбрасывать его с максимальной скоростью.
     \begin{statement} 
         \label{st:enough}
-        Если в задаче \eqref{eq:task1} \(m_0 - u_{max} \cdot T \geqslant M\), то \(u^*(t) = u_{max}\; \dot \forall t \in [0, T] \)~--- оптимальное управление.
+        Если в задаче \eqref{eq:task1_final} \(m_0 - u_{max} \cdot T \geqslant M\), то \(u^*(t) = u_{max}\; \dot \forall t \in [0, T] \)~--- оптимальное управление.
     \end{statement}
     \begin{proof}
         Предположим противное: пусть \(u^*(t)\)~--- оптимальное управление и существует 
-        \(t_1, t_2 \in [0, T]\) такие, что \(t_1 < t_2 \text{ и } u^*(\tilde t) < u_{max} \;\forall \tilde t \in [t_1, t_2]\). В силу предположения теоремы и второго уравнения из \eqref{eq:task1}, \(\dot m(t) = -u(t) \: \forall t \in [0, T]\) и, следовательно, \(m(t) = m_0 - \int_0^t{u^*(\tau)\,d\tau}\). Тогда для высоты получим следующее выражение:
-        \[
-         h(t) = \int_0^t{v(\tau)\, d\tau} \text{, но, в силу \eqref{eq:task1}, } \dot mv + m \dot v = -gm - kv^2 + lu
-        \]
-        Отсюда, выполняя соответствующие подстановки, получаем:
-        \[
-        \dot v = -g - \dfrac{1}{m_0 - \int_0^t{u^*(\tau)\,d\tau}} \cdot \left((l+v)u^* - kv^2\right) = \dfrac{1}{\int_0^t{u^*(\tau)\,d\tau} - m_0} \cdot \left((l+v)u^* - kv^2\right) - g
-        \]
+        \(t_1, t_2 \in [0, T]\) такие, что \(t_1 < t_2 \text{ и } u^*(\tilde t) < u_{max} \;\forall \tilde t \in [t_1, t_2],\) и \( u^*(t) = u_{max}\) иначе. В силу предположения теоремы и второго уравнения из \eqref{eq:task1_final}, \(\dot x_2(t) = x_2^2u(t) \: \forall t \in [0, T]\) и, следовательно, \(m(t) = m_0 - \int_0^t{u^*(\tau)\,d\tau}\). Пусть \(x_1(t)\)~--- скорость, соответствующая управлению \(u_{max}\) из условия теоремы, а \(\tilde x_1(t)\)~--- скорость, соответствующая оптимальному управлению \(u^*(t)\).
         До момента времени \(t_1\) скорости и массы для управлений \(u^*\) и \(u = u_{max}\) изменяются одинаково. Не ограничивая общности суждений, положим \(v(t_1) = 0,\:m(t_1) = m_1 > M, \: t_1 = 0\). Тогда при \(t_1 < \tau \leqslant t_2\) имеем:
-        \begin{gather}
-        \dot v(t_1) = \dfrac{lu^*(t_1)}{m_1}  - g \\
-        \label{eq:velocity:taylor}
-        v(\tau) = v(t_1) + \dot v(t_1) \cdot (\tau - t_1) + \bigO((\tau - t_0)^2) = ( \dfrac{lu^*(t_1)}{m_1}  - g) \cdot \tau + \bigO(\tau^2)
-        \end{gather}
-    Выражение \eqref{eq:velocity:taylor} представляет собой разложение в ряд Тейлора с центром в точке \(t_1\). Аналогичным образом, разложим в ряд Тейлора скорость \(v_{max}\), отвечающую управлению \(u = u_{max} \):
-    \begin{gather}
-        \dot v_{max}(t_1) = \dfrac{lu_{max}}{m_1}  - g \\
-        \label{eq:vmax:taylor}
-        v_{max}(\tau) = v_{max}(t_1) + \dot v(t_1) \cdot (\tau - t_1) + \bigO((\tau - t_0)^2) = ( \dfrac{lu_{max}}{m_1}  - g) \cdot \tau + \bigO(\tau^2)
-    \end{gather}
-    Теперь, вычтем из \eqref{eq:velocity:taylor} \eqref{eq:vmax:taylor}:
-    \begin{equation*}
-        v(\tau) - v_{max}(\tau) = \dfrac{l(u^*(\tau) - u_{max})}{m_1} \cdot \tau + \bigO(\tau^2)
-    \end{equation*}
-    По предположению, \(u^*(\tilde t) < u_{max} \;\forall \tilde t \in [t_1, t_2]\), стало быть, \(\dfrac{l(u^*(\tau) - u_{max})}{m_1} < 0\), тогда, при достаточно малом \(0 < \tau < 1\): 
-    \begin{equation}
-        \dfrac{v(\tau) - v_{max}(\tau)}{\tau} < 0
-    \end{equation}
-    Отсюда, так как \(\tau > 0\) получаем, что \(v(\tau) - v_{max}(\tau) < 0\). \\
-    Повторяя аналогичные рассуждения для всего отрезка \([t_1, t_2]\), получим, что всюду внутри отрезка \(v(\tau) < v_{max}\), что противоречит предположению об оптимальности управления \(u^*(t)\). Полученное противоречие доказывает утверждение.
+        \begin{gather*}
+        \dot x_1(\tau) = -g + \dfrac{1}{m1} 
+        \end{gather*}
     \end{proof}
     \begin{corollary*}
         Если в задаче \eqref{eq:task1} \(m_0 - u_{max} \cdot T \geqslant M\), то \(u^*(t) = u_{max}\; \forall t \in [0, T] \)~--- оптимальное управление.
