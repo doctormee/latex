@@ -20,12 +20,16 @@
 %  { }% space after theorem head; " " = normal interword spacewww
 %  {}% Manually specify head
 %\theoremstyle{mytheorem}
-\numberwithin{equation}{section} 
-\newtheorem{definition}{Определение}[section] 
-\newtheorem{theorem}{Теорема}[section] 
+\numberwithin{equation}{section}
+\theoremstyle{definition} 
+\newtheorem{definition}{Определение}[section]
+\theoremstyle{remark}
+\newtheorem*{note}{Замечание}
 \newtheorem{property}{Свойство}[section] 
-\newtheorem{corollary}{Следствие}[theorem] 
+\theoremstyle{plain}
+\newtheorem{theorem}{Теорема}[section] 
 \newtheorem{lemma}[theorem]{Лемма} 
+\newtheorem{corollary}{Следствие}[theorem] 
 \newtheorem*{statement}{Утверждение} 
 \renewenvironment{proof}{
 \noindent\textit{Доказательство: }} {\qed}
@@ -70,7 +74,8 @@
 
     \vspace{1cm}
     \begin{flushright}
-        \large \textit{Студент 315 группы}\\
+        \large \textit{Студенты 315 группы}\\
+        В.\,А.~Кузнецов\\
         В.\,А.~Сливинский
     
         \vspace{5mm}
@@ -91,5 +96,6 @@
     \pagebreak
     \input ./1.tex
     \input ./2.tex
+    \pagebreak
     \input ./biblio.tex
 \end{document}
